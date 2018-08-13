@@ -3,7 +3,7 @@ environment:
     PYTHON: "C:\\conda"
     MINICONDA_VERSION: "latest"
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
-    CONDA_DEPENDENCIES: "xarray dask toolz Cython sphinx cartopy matplotlib pyproj coverage gdal rasterio"
+    CONDA_DEPENDENCIES: "xarray dask toolz Cython sphinx cartopy matplotlib pyproj coverage gdal rasterio flake8 pytest"
     PIP_DEPENDENCIES: ""
     CONDA_CHANNELS: "conda-forge"
 
