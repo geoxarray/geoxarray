@@ -1,8 +1,14 @@
 from os import path
 from setuptools import setup, find_packages
 import sys
-import versioneer
 
+try:
+    # HACK: https://github.com/pypa/setuptools_scm/issues/190#issuecomment-351181286
+    # Stop setuptools_scm from including all repository files
+    import setuptools_scm.integration
+    setuptools_scm.integration.find_files = lambda _: []
+except ImportError:
+    pass
 
 # NOTE: This file must remain Python 2 compatible for the foreseeable future,
 # to ensure that we error out properly for people with outdated setuptools
@@ -34,8 +40,6 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
 
 setup(
     name='geoxarray',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
     description="Geolocation utilities for xarray objects",
     long_description=readme,
     author="geoxarray Developers",
@@ -52,6 +56,8 @@ setup(
             ]
         },
     install_requires=requirements,
+    use_scm_version={'write_to': 'geoxarray/version.py'},
+    setup_requires=['setuptools_scm', 'setuptools_scm_git_archive'],
     license="Apache",
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

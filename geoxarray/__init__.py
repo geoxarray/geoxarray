@@ -14,8 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .crs import CRS  # noqa
+try:
+    from .version import version as __version__  # noqa
+except ImportError:
+    # package is not installed
+    pass
 
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+# load the xarray accessors so they are added to xarray objects
+from . import accessor  # noqa

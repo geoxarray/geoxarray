@@ -1,5 +1,5 @@
 ===============================
-GeoXArray
+GeoXarray
 ===============================
 
 .. image:: https://img.shields.io/travis/geoxarray/geoxarray.svg
@@ -11,7 +11,7 @@ GeoXArray
 * Free software: Apache 2
 * Documentation: (COMING SOON!) https://geoxarray.github.io/geoxarray.
 
-Geolocation utilities for xarray objects. GeoXArray is meant to bring
+Geolocation utilities for xarray objects. GeoXarray is meant to bring
 together all of the features and conversions needed by various python
 packages working with geolocation xarray objects. This means being
 able to convert between various coordinate system implementations
@@ -50,7 +50,7 @@ libraries include, but may not be limited to:
 Development Status
 ------------------
 
-GeoXArray is actively being developed as a side project. Additions and
+GeoXarray is actively being developed as a side project. Additions and
 modifications are done as developers have time. If you would like to
 contribute, suggest features, or discuss anything else please file a
 bug on github.
