@@ -38,5 +38,3 @@ None currently
 import logging
 
 LOG = logging.getLogger(__name__)
-
-import accessor  # noqa
