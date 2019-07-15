@@ -78,3 +78,7 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# setuptools_scm files
+# this should be generated automatically when installed
+geoxarray/version.py
