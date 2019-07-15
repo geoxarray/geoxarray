@@ -20,4 +20,5 @@ except ImportError:
     # package is not installed
     pass
 
-import accessor  # noqa
+# load the xarray accessors so they are added to xarray objects
+from . import accessor  # noqa
