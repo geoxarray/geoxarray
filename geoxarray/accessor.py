@@ -29,6 +29,7 @@ Geolocation cases that these accessors are supposed to be able to handle:
 """
 
 import xarray as xr
+from pyproj import CRS
 
 try:
     from pyresample.geometry import AreaDefinition, SwathDefinition
@@ -51,24 +52,80 @@ class _SharedGeoAccessor(object):
 
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
-        # self._center = None
+        self._x_dim = None
+        self._y_dim = None
+        self._vertical_dim = None
+        self._time_dim = None
+        # map current dimension to geoxarray preferred dim name
+        self._dim_map = {}
+
         self._crs = None
-        self._is_gridded = True
-        self._cf_grid_mapping_parameters = None
+        self._is_gridded = None
+        self.set_dims()
+
+    def set_dims(self, x=None, y=None, vertical=None, time=None):
+        """Set preferred dimension names.
+
+        GeoXarray will use this information for future operations.
+        If any of the dimensions are not provided they will be found
+        by best guess.
+
+        Parameters
+        ----------
+
+        x : str or None
+            Name of the X dimension. This dimension usually exists with
+            a corresponding coordinate variable in meters for
+            gridded/projected data.
+        y : str or None
+            Name of the Y dimension. Similar to the X dimension but on the Y
+            axis.
+        vertical : str or None
+            Name of the vertical or Z dimension. This dimension usually exists
+            with a corresponding coordinate variable in meters for altitude
+            or pressure level (ex. hPa, millibar, etc).
+        time : str or None
+            Name of the time dimension. This dimension usually exists with a
+            corresponding coordinate variable with time objects.
+
+        """
+        obj = self._obj
+        dims = obj.dims
+        if x is None:
+            if 'x' in dims:
+                self._x_dim = 'x'
+        if y is None:
+            if 'y' in dims:
+                self._y_dim = 'y'
+        if vertical is None:
+            for z_dim in ('z', 'vertical', 'pressure_level'):
+                if z_dim in dims:
+                    self._vertical_dim = z_dim
+                    break
+        if time is None:
+            for t_dim in ('time', 't'):
+                if t_dim in dims:
+                    self._time_dim = t_dim
+                    break
+
+        self._dim_map[self._x_dim] = 'x'
+        self._dim_map[self._y_dim] = 'y'
+        self._dim_map[self._vertical_dim] = 'vertical'
+        self._dim_map[self._time_dim] = 'time'
 
     @property
-    def cf_grid_mapping_parameters(self):
-        return self._cf_grid_mapping_parameters
+    def dims(self):
+        """Get preferred dimension names in order."""
+        return tuple(self._dim_map.get(dname, dname) for dname in self._obj.dims)
 
-    @cf_grid_mapping_parameters.setter
-    def cf_grid_mapping_parameters(self, value):
-        self._cf_grid_mapping_parameters = value
-        # reset the CRS object so it gets recalculated
-        self._crs = None
-
-    def find_cf_grid_mapping(self):
-        """Search for CF standard grid mapping information."""
-        return self._cf_grid_mapping_parameters
+    @property
+    def sizes(self):
+        """Get size map with preferred dimension names."""
+        # return the same type of object as xarray
+        sizes_dict = {}
+        for dname, size in self._obj.sizes.items():
+            sizes_dict[self._dim_map.get(dname, dname)] = size
+        return self._obj.sizes.__class__(sizes_dict)
 
     @property
     def crs(self):
@@ -78,23 +135,25 @@ class _SharedGeoAccessor(object):
         coords_crs = self._obj.coords.get('crs')
         attrs_crs = self._obj.attrs.get('crs')
         area = self._obj.attrs.get('area')
-        cf_mapping_params = self.find_cf_grid_mapping()
-        self._is_gridded = True
-        if cf_mapping_params:
-            # TODO: Convert CF params to CRS object
-            self._cf_grid_mapping_parameters = cf_mapping_params
+        grid_mapping = self._obj.attrs.get('grid_mapping')
+        # TODO: Check for lon/lat 2D coordinate arrays
+        if grid_mapping:
+            self._crs = CRS.from_cf(self._obj[grid_mapping].attrs)
         elif coords_crs is not None:
-            crs = coords_crs
-            # TODO: Convert to geoxarray CRS object
+            crs = CRS.from_user_input(coords_crs)
         elif attrs_crs is not None:
-            crs = attrs_crs
-            # TODO: Convert to geoxarray CRS object
+            crs = CRS.from_user_input(attrs_crs)
         elif has_pyresample and isinstance(area, AreaDefinition):
-            # TODO: Convert and gather information from definitions
-            pass
+            if hasattr(area, 'crs'):
+                crs = area.crs
+            else:
+                crs = CRS.from_dict(area.proj_dict)
         elif has_pyresample and isinstance(area, SwathDefinition):
             # TODO: Convert and gather information from definitions
             self._is_gridded = False
+        else:
+            crs = False
+
         self._crs = crs
         return self._crs
 
@@ -125,6 +184,7 @@ class _SharedGeoAccessor(object):
 
     def plot(self):
         """Plot data on a map."""
+        # TODO: Support multiple backends (cartopy, geoviews, etc)?
         raise NotImplementedError()
 
     def freeze(self):
@@ -157,15 +217,6 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
         Setting geolocation this way can be useful when using lazy arrays
         (dask) and computing large lon/lat arrays could be wasteful when
         stored in `.coords`.
-
-        """
-        raise NotImplementedError()
-
-    def set_xy_variables(self, x_var_name, y_var_name):
-        """Specify the variables defining the X and Y coordinates for the gridded data.
-
-        This method assumes 'grid_mapping' is either already set in `.attrs`
-        or will be set with `set_grid_mapping`.
 
         """
         raise NotImplementedError()
