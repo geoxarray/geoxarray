@@ -56,12 +56,31 @@ class _SharedGeoAccessor(object):
         self._y_dim = None
         self._vertical_dim = None
         self._time_dim = None
-        # map current dimension to geoxarray preferred dim name
-        self._dim_map = {}
+        self._dim_map = False
 
         self._crs = None
         self._is_gridded = None
         self.set_dims()
+
+    @property
+    def dim_map(self):
+        """Map current data dimension to geoxarray preferred dim name."""
+        if self._dim_map is False:
+            # we haven't determined dimensions yet
+            self.set_dims()
+
+        if self._dim_map is None:
+            self._dim_map = {}
+            if self._x_dim is not None:
+                self._dim_map[self._x_dim] = 'x'
+            if self._y_dim is not None:
+                self._dim_map[self._y_dim] = 'y'
+            if self._vertical_dim is not None:
+                self._dim_map[self._vertical_dim] = 'vertical'
+            if self._time_dim is not None:
+                self._dim_map[self._time_dim] = 'time'
+
+        return self._dim_map
 
     def set_dims(self, x=None, y=None, vertical=None, time=None):
         """Set preferred dimension names.
@@ -91,32 +110,44 @@ class _SharedGeoAccessor(object):
         """
         obj = self._obj
         dims = obj.dims
-        if x is None:
+        if x is None and self._x_dim is None:
             if 'x' in dims:
                 self._x_dim = 'x'
-        if y is None:
+        elif x is not None:
+            assert x in dims
+            self._x_dim = x
+
+        if y is None and self._y_dim is None:
             if 'y' in dims:
                 self._y_dim = 'y'
-        if vertical is None:
+        elif y is not None:
+            assert y in dims
+            self._y_dim = y
+
+        if vertical is None and self._vertical_dim is None:
             for z_dim in ('z', 'vertical', 'pressure_level'):
                 if z_dim in dims:
                     self._vertical_dim = z_dim
                     break
-        if time is None:
+        elif vertical is not None:
+            assert vertical in dims
+            self._vertical_dim = vertical
+
+        if time is None and self._time_dim is None:
             for t_dim in ('time', 't'):
                 if t_dim in dims:
                     self._time_dim = t_dim
                     break
+        elif time is not None:
+            assert time in dims
+            self._time_dim = time
 
-        self._dim_map[self._x_dim] = 'x'
-        self._dim_map[self._y_dim] = 'y'
-        self._dim_map[self._vertical_dim] = 'vertical'
-        self._dim_map[self._time_dim] = 'time'
+        self._dim_map = None
 
     @property
     def dims(self):
         """Get preferred dimension names in order."""
-        return tuple(self._dim_map.get(dname, dname) for dname in self._obj.dims)
+        return tuple(self.dim_map.get(dname, dname) for dname in self._obj.dims)
 
     @property
     def sizes(self):
@@ -124,13 +155,13 @@ class _SharedGeoAccessor(object):
         # return the same type of object as xarray
         sizes_dict = {}
         for dname, size in self._obj.sizes.items():
-            sizes_dict[self._dim_map.get(dname, dname)] = size
+            sizes_dict[self.dim_map.get(dname, dname)] = size
         return self._obj.sizes.__class__(sizes_dict)
 
     @property
     def crs(self):
-        if self._crs is not None:
-            return self._crs
+        if self._crs is False or self._crs is None:
+            return None
 
         coords_crs = self._obj.coords.get('crs')
         attrs_crs = self._obj.attrs.get('crs')
