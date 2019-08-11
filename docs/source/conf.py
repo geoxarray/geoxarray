@@ -203,4 +203,5 @@ intersphinx_mapping = {
     'xarray': ('https://xarray.pydata.org/en/stable', None),
     'dask': ('https://dask.pydata.org/en/latest', None),
     'matplotlib': ('https://matplotlib.org', None),
+    'pyproj': ('https://pyproj4.github.io/pyproj/stable', None),
 }

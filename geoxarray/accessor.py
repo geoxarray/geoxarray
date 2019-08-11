@@ -51,7 +51,106 @@ class _SharedGeoAccessor(object):
     """Accessor functionality shared between Dataset and DataArray objects."""
 
     def __init__(self, xarray_obj):
+        """Set handle for xarray object."""
         self._obj = xarray_obj
+
+
+@xr.register_dataset_accessor('geo')
+class GeoDatasetAccessor(_SharedGeoAccessor):
+    """Provide Dataset geolocation helper functions from a `.geo` accessor."""
+
+    def __init__(self, dataset_obj):
+        """Initialize variable CRS and dimension information."""
+        super(GeoDatasetAccessor, self).__init__(dataset_obj)
+        # if there is one single CRS for the whole Dataset let's hold on to it
+        self._crs = None
+
+    def set_dims(self, x=None, y=None, vertical=None, time=None):
+        """For every variable that has the provided dimensions"""
+        all_dims = {
+            'x': x,
+            'y': y,
+            'vertical': vertical,
+            'time': time,
+        }
+        for var in self._obj.variables.values():
+            dims = {k: v for k, v in all_dims.items() if v in var.dims}
+            if not dims:
+                continue
+            var.geo.set_dims(**dims)
+
+    def set_crs(self, crs=None, variables=None):
+        """Set CRS for this Dataset's variables.
+
+        Parameters
+        ----------
+        crs : pyproj.crs.CRS
+            Set CRS for specified variables to this CRS object. If not
+            provided then the variables metadata is used to determine the
+            best CRS (CF 'grid_mapping' variable, 'crs' attribute, etc).
+        variables : iterable
+            Names of variables that will have CRS information applied or
+            determined. If not provided then all variables will be used or
+            checked.
+
+        Returns
+        -------
+        dict
+            Map of variable names to CRS object applied.
+
+        """
+        if variables is None:
+            variables = self._obj.variables.keys()
+
+        applied_crs = {}
+        gmap_names = {}
+        for var_name in variables:
+            var = self._obj[var_name]
+            if crs is not None:
+                var.geo.crs = crs
+                applied_crs[var_name] = crs
+                continue
+
+            # distribute grid_mapping variables to data variables if present
+            gmap_name = var.attrs.get('grid_mapping')
+            if gmap_name in self._obj.variables:
+                gmap_var = self._obj[gmap_name]
+                if gmap_name not in gmap_names:
+                    gmap_crs = CRS.from_cf(gmap_var.attrs)
+                    gmap_names[gmap_name] = gmap_crs
+                var.geo.crs = gmap_names[gmap_name]
+                applied_crs[var_name] = gmap_names[gmap_name]
+                continue
+
+            # let the variable determine its own CRS
+            var_crs = var.geo.crs
+            applied_crs[var_name] = var_crs
+        return applied_crs
+
+    @property
+    def crs(self):
+        """Shared CRS object between all geolocated variables."""
+        if self._crs is False:
+            return None
+        elif self._crs is not None:
+            return self._crs
+        applied_crs = set(self.set_crs().values())
+        num_crs = len(applied_crs)
+        if num_crs == 1:
+            return tuple(applied_crs)[0]
+        elif num_crs >= 1:
+            raise RuntimeError("Dataset has more than one CRS")
+        else:
+            raise RuntimeError("No CRS information found in Dataset")
+
+
+@xr.register_dataarray_accessor('geo')
+class GeoDataArrayAccessor(_SharedGeoAccessor):
+    """Provide DataArray geolocation helper functions from a `.geo` accessor."""
+
+    def __init__(self, data_arr_obj):
+        """Initialize a 'best guess' dimension mapping to preferred dimension names."""
+        super(GeoDataArrayAccessor, self).__init__(data_arr_obj)
         self._x_dim = None
         self._y_dim = None
         self._vertical_dim = None
@@ -160,8 +259,10 @@ class _SharedGeoAccessor(object):
 
     @property
     def crs(self):
-        if self._crs is False or self._crs is None:
+        if self._crs is False:
             return None
+        elif self._crs is not None:
+            return self._crs
 
         coords_crs = self._obj.coords.get('crs')
         attrs_crs = self._obj.attrs.get('crs')
@@ -197,6 +298,19 @@ class _SharedGeoAccessor(object):
         """
         self._crs = value
 
+    def set_cf_grid_mapping(self, grid_mapping_var, errcheck=False):
+        """Set CRS information based on CF standard 'grid_mapping' variable.
+
+        See :meth:`pyproj.crs.CRS.from_cf` for details. Argument can be
+        DataArray or Variable object for the grid mapping variable or a
+        dictionary of CF standard grid mapping attributes.
+
+        """
+        # XXX: Should this just be part of the CRS setter? kwargs can't be passed then
+        if not isinstance(grid_mapping_var, dict):
+            grid_mapping_var = grid_mapping_var.attrs
+        self._crs = CRS.from_cf(grid_mapping_var, errcheck=errcheck)
+
     def get_lonlats(self, chunks=None):
         """Return longitude and latitude arrays.
 
@@ -217,42 +331,3 @@ class _SharedGeoAccessor(object):
         """Plot data on a map."""
         # TODO: Support multiple backends (cartopy, geoviews, etc)?
         raise NotImplementedError()
-
-    def freeze(self):
-        """Set a 'crs' coordinate to the current computed CRS.
-
-        This modifies the current metadata and assumes that no new CRS
-        information will be added or modified from now on.
-
-        """
-        # XXX: Is this useful or needed at all?
-        raise NotImplementedError()
-
-
-@xr.register_dataset_accessor('geo')
-class GeoDatasetAccessor(_SharedGeoAccessor):
-    def find_cf_grid_mapping(self):
-        """Search for CF standard grid mapping information."""
-        params = super(GeoDataArrayAccessor, self).find_cf_grid_mapping()
-        if not params and 'grid_mapping' in self._obj.attrs:
-            params = self._obj.variables[self._obj.attrs['grid_mapping']]
-        return params
-
-    def set_cf_grid_mapping_parameters(self, grid_mapping_var_name):
-        """Specify the variable containing the CF-compliant CRS information"""
-        raise NotImplementedError()
-
-    def set_ungridded_coordinates(self, lon_var_name, lat_var_name):
-        """Specify longitude and latitude variables defining geolocation.
-
-        Setting geolocation this way can be useful when using lazy arrays
-        (dask) and computing large lon/lat arrays could be wasteful when
-        stored in `.coords`.
-
-        """
-        raise NotImplementedError()
-
-
-@xr.register_dataarray_accessor('geo')
-class GeoDataArrayAccessor(_SharedGeoAccessor):
-    pass
