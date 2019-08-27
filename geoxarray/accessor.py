@@ -28,6 +28,7 @@ Geolocation cases that these accessors are supposed to be able to handle:
 
 """
 
+import warnings
 import xarray as xr
 from pyproj import CRS
 
@@ -96,19 +97,20 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
         Returns
         -------
         dict
-            Map of variable names to CRS object applied.
+            Map of variable names to DataArray objects with CRS objects
+            applied.
 
         """
         if variables is None:
             variables = self._obj.variables.keys()
 
-        applied_crs = {}
+        applied_vars = {}
         gmap_names = {}
         for var_name in variables:
             var = self._obj[var_name]
             if crs is not None:
                 var.geo.crs = crs
-                applied_crs[var_name] = crs
+                applied_vars[var_name] = var
                 continue
 
             # distribute grid_mapping variables to data variables if present
@@ -119,13 +121,17 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
                     gmap_crs = CRS.from_cf(gmap_var.attrs)
                     gmap_names[gmap_name] = gmap_crs
                 var.geo.crs = gmap_names[gmap_name]
-                applied_crs[var_name] = gmap_names[gmap_name]
+                applied_vars[var_name] = var
                 continue
 
             # let the variable determine its own CRS
-            var_crs = var.geo.crs
-            applied_crs[var_name] = var_crs
-        return applied_crs
+            applied_vars[var_name] = var
+        return applied_vars
+
+    def _set_crs_objects(self, crs=None, variables=None):
+        """Get CRS object for each variable."""
+        var_dict = self.set_crs(crs=crs, variables=variables)
+        return {var_name: var.geo.crs for var_name, var in var_dict.items()}
 
     @property
     def crs(self):
@@ -134,10 +140,11 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
             return None
         elif self._crs is not None:
             return self._crs
-        applied_crs = set(self.set_crs().values())
+        applied_crs = set(self._set_crs_objects().values())
         num_crs = len(applied_crs)
         if num_crs == 1:
-            return tuple(applied_crs)[0]
+            self._crs = tuple(applied_crs)[0]
+            return self._crs
         elif num_crs >= 1:
             raise RuntimeError("Dataset has more than one CRS")
         else:
@@ -264,14 +271,18 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         elif self._crs is not None:
             return self._crs
 
+        grid_mapping = self._obj.attrs.get('grid_mapping')
+        if grid_mapping:
+            warnings.warn(
+                "'grid_mapping' attribute found, but no grid_mapping variable"
+                " was provided. Use 'data_arr.geo.set_cf_grid_mapping' to "
+                "provide one. Will search other metadata for CRS information.")
+
+        # TODO: Check for lon/lat 2D coordinate arrays
         coords_crs = self._obj.coords.get('crs')
         attrs_crs = self._obj.attrs.get('crs')
         area = self._obj.attrs.get('area')
-        grid_mapping = self._obj.attrs.get('grid_mapping')
-        # TODO: Check for lon/lat 2D coordinate arrays
-        if grid_mapping:
-            self._crs = CRS.from_cf(self._obj[grid_mapping].attrs)
-        elif coords_crs is not None:
+        if coords_crs is not None:
             crs = CRS.from_user_input(coords_crs)
         elif attrs_crs is not None:
             crs = CRS.from_user_input(attrs_crs)
@@ -287,7 +298,7 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             crs = False
 
         self._crs = crs
-        return self._crs
+        return self._crs if self._crs is not False else None
 
     @crs.setter
     def crs(self, value):
