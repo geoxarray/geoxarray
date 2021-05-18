@@ -2,8 +2,8 @@
 GeoXarray
 ===============================
 
-.. image:: https://img.shields.io/travis/geoxarray/geoxarray.svg
-        :target: https://travis-ci.org/geoxarray/geoxarray
+.. image:: https://github.com/geoxarray/geoxarray/workflows/CI/badge.svg?branch=main
+        :target: https://github.com/geoxarray/geoxarray/actions?query=workflow%3A%22CI%22
 
 .. image:: https://img.shields.io/pypi/v/geoxarray.svg
         :target: https://pypi.python.org/pypi/geoxarray
