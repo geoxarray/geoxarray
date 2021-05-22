@@ -84,7 +84,7 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
         self._crs = None
 
     def set_dims(self, x=None, y=None, vertical=None, time=None):
-        """For every variable that has the provided dimensions"""
+        """For every variable that has the provided dimensions."""
         all_dims = {
             "x": x,
             "y": y,
@@ -214,7 +214,6 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
 
         Parameters
         ----------
-
         x : str or None
             Name of the X dimension. This dimension usually exists with
             a corresponding coordinate variable in meters for

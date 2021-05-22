@@ -29,13 +29,13 @@ LOG = logging.getLogger(__name__)
 
 # http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/apf.html
 PROJ_TO_GX = {
-    'a': 'semi_major_axis',
-    'b': 'semi_minor_axis',
+    "a": "semi_major_axis",
+    "b": "semi_minor_axis",
 }
 
 
 def proj4_str_to_dict(proj4_str):
-    """Convert PROJ.4 compatible string definition to dict
+    """Convert PROJ.4 compatible string definition to dict.
 
     Note: Key only parameters will be assigned a value of `True`.
     """
@@ -43,7 +43,7 @@ def proj4_str_to_dict(proj4_str):
 
 
 def proj4_dict_to_str(proj4_dict, sort=False):
-    """Convert a dictionary of PROJ.4 parameters to a valid PROJ.4 string"""
+    """Convert a dictionary of PROJ.4 parameters to a valid PROJ.4 string."""
     return CRS(proj4_dict).to_proj4()
 
 
