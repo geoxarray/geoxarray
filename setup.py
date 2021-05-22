@@ -1,6 +1,7 @@
-from os import path
-from setuptools import setup, find_packages
 import sys
+from os import path
+
+from setuptools import find_packages, setup
 
 try:
     # HACK: https://github.com/pypa/setuptools_scm/issues/190#issuecomment-351181286
@@ -16,7 +17,7 @@ except ImportError:
 # and/or pip.
 if sys.version_info < (3, 6):
     error = """
-geoxarray does not support Python {0}.{2}.
+geoxarray does not support Python {0}.{1}.
 Python 3.6 and above is required. Check your Python version like so:
 
 python3 --version

@@ -22,8 +22,9 @@ functions.
 
 """
 
-from pyproj import CRS
 import logging
+
+from pyproj import CRS
 
 LOG = logging.getLogger(__name__)
 

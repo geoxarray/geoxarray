@@ -24,6 +24,7 @@ originally written and copied by David Hoese (djhoese).
 """
 
 from logging import getLogger
+
 import numpy as np
 
 try:
@@ -31,9 +32,10 @@ try:
 except ImportError:
     DataArray = np.ndarray
 
-from ._proj4 import proj4_str_to_dict
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
+
+from ._proj4 import proj4_str_to_dict
 
 try:
     from cartopy.crs import from_proj

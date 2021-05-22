@@ -18,14 +18,14 @@
 import pytest
 
 from ._data_array_cases import (
-    geotiff_y_x,
-    geotiff_x_y,
-    geotiff_a_b,
-    cf_y_x,
-    raw_coords_lats1d_lons1d,
+    ALT_DIM_SIZE,
     X_DIM_SIZE,
     Y_DIM_SIZE,
-    ALT_DIM_SIZE,
+    cf_y_x,
+    geotiff_a_b,
+    geotiff_x_y,
+    geotiff_y_x,
+    raw_coords_lats1d_lons1d,
 )
 
 
