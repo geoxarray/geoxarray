@@ -23,8 +23,14 @@ from ._data_array_cases import (
     Y_DIM_SIZE,
     cf_y_x,
     geotiff_a_b,
+    geotiff_bands_y_x,
     geotiff_x_y,
     geotiff_y_x,
+    geotiff_y_x_bands,
+    misc_t_z_y_x,
+    misc_time_z_y_x,
+    misc_y_x_z,
+    misc_z_y_x,
     raw_coords_lats1d_lons1d,
 )
 
@@ -32,9 +38,15 @@ from ._data_array_cases import (
 @pytest.mark.parametrize(
     ("get_data_array", "exp_dims"),
     [
-        (geotiff_y_x, ("y", "x")),
-        (geotiff_x_y, ("x", "y")),
         (geotiff_a_b, ("y", "x")),
+        (geotiff_x_y, ("x", "y")),
+        (geotiff_y_x, ("y", "x")),
+        (geotiff_bands_y_x, ("bands", "y", "x")),
+        (geotiff_y_x_bands, ("y", "x", "bands")),
+        (misc_t_z_y_x, ("time", "vertical", "y", "x")),
+        (misc_time_z_y_x, ("time", "vertical", "y", "x")),
+        (misc_y_x_z, ("y", "x", "vertical")),
+        (misc_z_y_x, ("vertical", "y", "x")),
         (cf_y_x, ("y", "x")),
         (raw_coords_lats1d_lons1d, ("y", "x")),
     ],

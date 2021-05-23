@@ -22,6 +22,7 @@ X_DIM_SIZE = 20
 Y_DIM_SIZE = 10
 ALT_DIM_SIZE = 5
 OTHER_DIM_SIZE = 3
+TIME_DIM_SIZE = 100
 
 
 def geotiff_y_x():
@@ -50,6 +51,48 @@ ALL_GEOTIFF_2D_CASES = [
     geotiff_y_x,
     geotiff_a_b,
 ]
+
+
+def geotiff_bands_y_x():
+    return xr.DataArray(
+        da.empty((OTHER_DIM_SIZE, Y_DIM_SIZE, X_DIM_SIZE)),
+        dims=("bands", "y", "x"),
+    )
+
+
+def geotiff_y_x_bands():
+    return xr.DataArray(
+        da.empty((Y_DIM_SIZE, X_DIM_SIZE, OTHER_DIM_SIZE)),
+        dims=("y", "x", "bands"),
+    )
+
+
+def misc_z_y_x():
+    return xr.DataArray(
+        da.empty((ALT_DIM_SIZE, Y_DIM_SIZE, X_DIM_SIZE)),
+        dims=("z", "y", "x"),
+    )
+
+
+def misc_y_x_z():
+    return xr.DataArray(
+        da.empty((Y_DIM_SIZE, X_DIM_SIZE, ALT_DIM_SIZE)),
+        dims=("y", "x", "z"),
+    )
+
+
+def misc_time_z_y_x():
+    return xr.DataArray(
+        da.empty((TIME_DIM_SIZE, ALT_DIM_SIZE, Y_DIM_SIZE, X_DIM_SIZE)),
+        dims=("time", "z", "y", "x"),
+    )
+
+
+def misc_t_z_y_x():
+    return xr.DataArray(
+        da.empty((TIME_DIM_SIZE, ALT_DIM_SIZE, Y_DIM_SIZE, X_DIM_SIZE)),
+        dims=("t", "z", "y", "x"),
+    )
 
 
 def raw_coords_lats1d_lons1d():
