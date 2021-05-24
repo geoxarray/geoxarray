@@ -18,11 +18,8 @@
 import pytest
 
 from ._data_array_cases import (
-    ALT_DIM_SIZE,
-    X_DIM_SIZE,
-    Y_DIM_SIZE,
     cf_y_x,
-    geotiff_a_b,
+    geotiff_b_a,
     geotiff_bands_y_x,
     geotiff_x_y,
     geotiff_y_x,
@@ -33,12 +30,13 @@ from ._data_array_cases import (
     misc_z_y_x,
     raw_coords_lats1d_lons1d,
 )
+from ._shared import ALT_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
 
 
 @pytest.mark.parametrize(
     ("get_data_array", "exp_dims"),
     [
-        (geotiff_a_b, ("y", "x")),
+        (geotiff_b_a, ("y", "x")),
         (geotiff_x_y, ("x", "y")),
         (geotiff_y_x, ("y", "x")),
         (geotiff_bands_y_x, ("bands", "y", "x")),

@@ -18,11 +18,7 @@ import xarray as xr
 from dask import array as da
 from pyproj import CRS
 
-X_DIM_SIZE = 20
-Y_DIM_SIZE = 10
-ALT_DIM_SIZE = 5
-OTHER_DIM_SIZE = 3
-TIME_DIM_SIZE = 100
+from ._shared import ALT_DIM_SIZE, OTHER_DIM_SIZE, TIME_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
 
 
 def geotiff_y_x():
@@ -40,7 +36,7 @@ def geotiff_x_y():
     )
 
 
-def geotiff_a_b():
+def geotiff_b_a():
     return xr.DataArray(
         da.empty((Y_DIM_SIZE, X_DIM_SIZE)),
         dims=("a", "b"),
@@ -49,7 +45,7 @@ def geotiff_a_b():
 
 ALL_GEOTIFF_2D_CASES = [
     geotiff_y_x,
-    geotiff_a_b,
+    geotiff_b_a,
 ]
 
 

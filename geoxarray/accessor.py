@@ -24,7 +24,7 @@ Geolocation cases that these accessors are supposed to be able to handle:
    more data variables and one CRS specification variable. By default
    a 'grid_mapping' attribute is used to specify the name of the variable.
 
-   http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/ch05s06.html
+   https://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/ch05s06.html
 2. Geotiff DataArrays: A :class:`~xarray.DataArray` object returned by either
    the ``rioxarray`` library or by :func:`xarray.open_rasterio``.
 3. Raw lon/lat coordinate arrays: A :class:`~xarray.DataArray` or :class:`~xarray.Dataset`
@@ -43,7 +43,10 @@ to other formats (CF compatible NetCDF file).
 
 """
 
+from __future__ import annotations
+
 import warnings
+from typing import Optional
 
 import xarray as xr
 from pyproj import CRS
@@ -72,31 +75,132 @@ class _SharedGeoAccessor(object):
     def __init__(self, xarray_obj):
         """Set handle for xarray object."""
         self._obj = xarray_obj
+        self._crs = None
+        self._x_dim = None
+        self._y_dim = None
+        self._vertical_dim = None
+        self._time_dim = None
+        self._dim_map = False
+
+    def _get_obj(self, inplace):
+        """Get the object to modify.
+
+        Parameters
+        ----------
+        inplace: bool
+            If True, returns self.
+
+        Returns
+        -------
+        :obj:`xarray.Dataset` | :obj:`xarray.DataArray`
+
+        """
+        if inplace:
+            return self._obj
+        obj_copy = self._obj.copy(deep=True)
+        # preserve attribute information
+        obj_copy.geo._crs = self._crs
+        obj_copy.geo._x_dim = self._x_dim
+        obj_copy.geo._y_dim = self._y_dim
+        obj_copy.geo._vertical_dim = self._vertical_dim
+        obj_copy.geo._time_dim = self._time_dim
+        return obj_copy
+
+    @property
+    def dim_map(self):
+        """Map current data dimension to geoxarray preferred dim name."""
+        if self._dim_map is False:
+            # we haven't determined dimensions yet
+            self.set_dims(inplace=True)
+
+        if self._dim_map is None:
+            self._dim_map = {}
+            if self._x_dim is not None:
+                self._dim_map[self._x_dim] = "x"
+            if self._y_dim is not None:
+                self._dim_map[self._y_dim] = "y"
+            if self._vertical_dim is not None:
+                self._dim_map[self._vertical_dim] = "vertical"
+            if self._time_dim is not None:
+                self._dim_map[self._time_dim] = "time"
+
+        return self._dim_map
+
+    @property
+    def dims(self):
+        """Get preferred dimension names in order."""
+        return tuple(self.dim_map.get(dname, dname) for dname in self._obj.dims)
+
+    @property
+    def sizes(self):
+        """Get size map with preferred dimension names."""
+        # return the same type of object as xarray
+        sizes_dict = {}
+        for dname, size in self._obj.sizes.items():
+            sizes_dict[self.dim_map.get(dname, dname)] = size
+        return self._obj.sizes.__class__(sizes_dict)
+
+    def write_dims(self, inplace: bool = False):
+        """Rename object's dimensions to match geoxarray's preferred dimension names."""
+        obj_copy = self._get_obj(inplace)
+        return obj_copy.rename(self.dim_map)
 
 
 @xr.register_dataset_accessor("geo")
 class GeoDatasetAccessor(_SharedGeoAccessor):
     """Provide Dataset geolocation helper functions from a `.geo` accessor."""
 
-    def __init__(self, dataset_obj):
-        """Initialize variable CRS and dimension information."""
-        super(GeoDatasetAccessor, self).__init__(dataset_obj)
-        # if there is one single CRS for the whole Dataset let's hold on to it
-        self._crs = None
+    def set_dims(
+        self,
+        x: Optional[str] = None,
+        y: Optional[str] = None,
+        vertical: Optional[str] = None,
+        time: Optional[str] = None,
+        inplace: bool = False,
+    ):
+        """Tell geoxarray the names of the provided dimensions in this Dataset.
 
-    def set_dims(self, x=None, y=None, vertical=None, time=None):
-        """For every variable that has the provided dimensions."""
+        Parameters
+        ----------
+        x
+        y
+        vertical
+        time
+        inplace
+
+        """
         all_dims = {
             "x": x,
             "y": y,
             "vertical": vertical,
             "time": time,
         }
-        for var in self._obj.variables.values():
-            dims = {k: v for k, v in all_dims.items() if v in var.dims}
+
+        obj_copy = self._get_obj(inplace)
+        # tell the dim_map property to produce the "as-is" dim map
+        obj_copy.geo._dim_map = None
+        dim_map = obj_copy.geo.dim_map
+        for data_arr in self._obj.data_vars.values():
+            dims = {k: v for k, v in all_dims.items() if v in data_arr.dims}
             if not dims:
                 continue
-            var.geo.set_dims(**dims)
+            var_dim_map = data_arr.geo.set_dims(**dims, inplace=True).geo.dim_map
+            self._update_gx_dim_dict(dim_map, var_dim_map)
+
+        # update our attributes
+        for dim_name, gx_dim_name in dim_map.items():
+            if gx_dim_name is None:
+                continue
+            setattr(obj_copy.geo, f"_{gx_dim_name}_dim", dim_name)
+        # tell the dim_map to get regenerated
+        obj_copy.geo._dim_map = None
+        return obj_copy
+
+    def _update_gx_dim_dict(self, old, new):
+        for k, v in new.items():
+            if v in ("x", "y", "time", "vertical"):
+                old[k] = v
+        return old
 
     def set_crs(self, crs=None, variables=None):
         """Set CRS for this Dataset's variables.
@@ -175,43 +279,36 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
 
     def __init__(self, data_arr_obj):
         """Initialize a 'best guess' dimension mapping to preferred dimension names."""
-        super(GeoDataArrayAccessor, self).__init__(data_arr_obj)
-        self._x_dim = None
-        self._y_dim = None
-        self._vertical_dim = None
-        self._time_dim = None
-        self._dim_map = False
-
-        self._crs = None
         self._is_gridded = None
-        self.set_dims()
+        super(GeoDataArrayAccessor, self).__init__(data_arr_obj)
 
-    @property
-    def dim_map(self):
-        """Map current data dimension to geoxarray preferred dim name."""
-        if self._dim_map is False:
-            # we haven't determined dimensions yet
-            self.set_dims()
+    def _get_obj(self, inplace):
+        """Get the object to modify.
 
-        if self._dim_map is None:
-            self._dim_map = {}
-            if self._x_dim is not None:
-                self._dim_map[self._x_dim] = "x"
-            if self._y_dim is not None:
-                self._dim_map[self._y_dim] = "y"
-            if self._vertical_dim is not None:
-                self._dim_map[self._vertical_dim] = "vertical"
-            if self._time_dim is not None:
-                self._dim_map[self._time_dim] = "time"
+        Parameters
+        ----------
+        inplace: bool
+            If True, returns self.
 
-        return self._dim_map
+        Returns
+        -------
+        :obj:`xarray.Dataset` | :obj:`xarray.DataArray`
 
-    def set_dims(self, x=None, y=None, vertical=None, time=None):
-        """Set preferred dimension names.
+        """
+        obj_copy = super()._get_obj(inplace)
+        # preserve attribute information
+        obj_copy.geo._is_gridded = self._is_gridded
+        return obj_copy
+
+    def set_dims(self, x=None, y=None, vertical=None, time=None, inplace=True):
+        """Set preferred dimension names inside the GeoXarray accessor.
 
         GeoXarray will use this information for future operations.
         If any of the dimensions are not provided they will be found
         by best guess.
+
+        This information does not rename or modify the data of the Xarray
+        object itself.
 
         Parameters
         ----------
@@ -231,59 +328,46 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             corresponding coordinate variable with time objects.
 
         """
-        obj = self._obj
+        obj = self._get_obj(inplace)
         dims = obj.dims
         if x is None and self._x_dim is None:
             if "x" in dims:
-                self._x_dim = "x"
+                obj.geo._x_dim = "x"
         elif x is not None:
             assert x in dims
-            self._x_dim = x
+            obj.geo._x_dim = x
 
         if y is None and self._y_dim is None:
             if "y" in dims:
-                self._y_dim = "y"
+                obj.geo._y_dim = "y"
         elif y is not None:
             assert y in dims
-            self._y_dim = y
+            obj.geo._y_dim = y
 
         if len(dims) == 2 and self._x_dim is None and self._y_dim is None:
-            self._y_dim = dims[0]
-            self._x_dim = dims[1]
+            obj.geo._y_dim = dims[0]
+            obj.geo._x_dim = dims[1]
 
         if vertical is None and self._vertical_dim is None:
             for z_dim in ("z", "vertical", "pressure_level"):
                 if z_dim in dims:
-                    self._vertical_dim = z_dim
+                    obj.geo._vertical_dim = z_dim
                     break
         elif vertical is not None:
             assert vertical in dims
-            self._vertical_dim = vertical
+            obj.geo._vertical_dim = vertical
 
         if time is None and self._time_dim is None:
             for t_dim in ("time", "t"):
                 if t_dim in dims:
-                    self._time_dim = t_dim
+                    obj.geo._time_dim = t_dim
                     break
         elif time is not None:
             assert time in dims
-            self._time_dim = time
+            obj.geo._time_dim = time
 
-        self._dim_map = None
-
-    @property
-    def dims(self):
-        """Get preferred dimension names in order."""
-        return tuple(self.dim_map.get(dname, dname) for dname in self._obj.dims)
-
-    @property
-    def sizes(self):
-        """Get size map with preferred dimension names."""
-        # return the same type of object as xarray
-        sizes_dict = {}
-        for dname, size in self._obj.sizes.items():
-            sizes_dict[self.dim_map.get(dname, dname)] = size
-        return self._obj.sizes.__class__(sizes_dict)
+        obj.geo._dim_map = None
+        return obj
 
     @property
     def crs(self):
@@ -313,6 +397,7 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         elif has_pyresample and isinstance(area, SwathDefinition):
             # TODO: Convert and gather information from definitions
             self._is_gridded = False
+            crs = False
         else:
             crs = False
 
