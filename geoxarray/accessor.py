@@ -202,7 +202,7 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
                 old[k] = v
         return old
 
-    def set_crs(self, crs=None, variables=None):
+    def _set_crs(self, crs=None, variables=None):
         """Set CRS for this Dataset's variables.
 
         Parameters
@@ -252,7 +252,7 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
 
     def _set_crs_objects(self, crs=None, variables=None):
         """Get CRS object for each variable."""
-        var_dict = self.set_crs(crs=crs, variables=variables)
+        var_dict = self._set_crs(crs=crs, variables=variables)
         return {var_name: var.geo.crs for var_name, var in var_dict.items()}
 
     @property
