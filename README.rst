@@ -2,11 +2,15 @@
 GeoXarray
 ===============================
 
-.. image:: https://img.shields.io/travis/geoxarray/geoxarray.svg
-        :target: https://travis-ci.org/geoxarray/geoxarray
+.. image:: https://github.com/geoxarray/geoxarray/workflows/CI/badge.svg?branch=main
+        :target: https://github.com/geoxarray/geoxarray/actions?query=workflow%3A%22CI%22
 
 .. image:: https://img.shields.io/pypi/v/geoxarray.svg
         :target: https://pypi.python.org/pypi/geoxarray
+
+.. image:: https://coveralls.io/repos/github/geoxarray/geoxarray/badge.svg?branch=main
+    :target: https://coveralls.io/github/geoxarray/geoxarray?branch=main
+
 
 * Free software: Apache 2
 * Documentation: (COMING SOON!) https://geoxarray.github.io/geoxarray.

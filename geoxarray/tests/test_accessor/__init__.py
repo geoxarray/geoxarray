@@ -13,13 +13,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""GeoXarray convenience imports."""
-
-try:
-    from .version import version as __version__  # noqa
-except ImportError:
-    # package is not installed
-    pass
-
-# load the xarray accessors so they are added to xarray objects
-from . import accessor  # noqa
+"""Tests specific to xarray accessor usage."""

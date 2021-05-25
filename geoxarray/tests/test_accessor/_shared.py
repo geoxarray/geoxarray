@@ -13,13 +13,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""GeoXarray convenience imports."""
+"""Shared information and utilities for the data cases."""
 
-try:
-    from .version import version as __version__  # noqa
-except ImportError:
-    # package is not installed
-    pass
-
-# load the xarray accessors so they are added to xarray objects
-from . import accessor  # noqa
+X_DIM_SIZE = 20
+Y_DIM_SIZE = 10
+ALT_DIM_SIZE = 5
+OTHER_DIM_SIZE = 3
+TIME_DIM_SIZE = 100

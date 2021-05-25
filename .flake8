@@ -1,3 +1,4 @@
 [flake8]
-exclude = .git,__pycache__,build,dist,versioneer.py,geoxarray/_version.py,docs/source/conf.py
+exclude = .git,__pycache__,build,dist,geoxarray/version.py,docs/source/conf.py
+ignore = D102, D103
 max-line-length = 120

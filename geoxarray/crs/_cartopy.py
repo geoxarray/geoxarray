@@ -24,6 +24,7 @@ originally written and copied by David Hoese (djhoese).
 """
 
 from logging import getLogger
+
 import numpy as np
 
 try:
@@ -31,9 +32,9 @@ try:
 except ImportError:
     DataArray = np.ndarray
 
-from ._proj4 import proj4_str_to_dict
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
+from pyproj import CRS
 
 try:
     from cartopy.crs import from_proj
@@ -42,30 +43,29 @@ except ImportError:
 
 logger = getLogger(__name__)
 
-_GLOBE_PARAMS = {'datum': 'datum',
-                 'ellps': 'ellipse',
-                 'a': 'semimajor_axis',
-                 'b': 'semiminor_axis',
-                 'f': 'flattening',
-                 'rf': 'inverse_flattening',
-                 'towgs84': 'towgs84',
-                 'nadgrids': 'nadgrids'}
+_GLOBE_PARAMS = {
+    "datum": "datum",
+    "ellps": "ellipse",
+    "a": "semimajor_axis",
+    "b": "semiminor_axis",
+    "f": "flattening",
+    "rf": "inverse_flattening",
+    "towgs84": "towgs84",
+    "nadgrids": "nadgrids",
+}
 
 
 def _globe_from_proj4(proj4_terms):
     """Create a `Globe` object from PROJ.4 parameters."""
-    globe_terms = filter(lambda term: term[0] in _GLOBE_PARAMS,
-                         proj4_terms.items())
-    globe = ccrs.Globe(**{_GLOBE_PARAMS[name]: value for name, value in
-                          globe_terms})
+    globe_terms = filter(lambda term: term[0] in _GLOBE_PARAMS, proj4_terms.items())
+    globe = ccrs.Globe(**{_GLOBE_PARAMS[name]: value for name, value in globe_terms})
     return globe
 
 
 # copy of class in cartopy (before it was released)
 class _PROJ4Projection(ccrs.Projection):
-
     def __init__(self, proj4_terms, globe=None, bounds=None):
-        terms = proj4_str_to_dict(proj4_terms)
+        terms = CRS.from_user_input(proj4_terms).to_dict()
         globe = _globe_from_proj4(terms) if globe is None else globe
 
         other_terms = []
@@ -77,13 +77,12 @@ class _PROJ4Projection(ccrs.Projection):
         self.bounds = bounds
 
     def __repr__(self):
-        return '_PROJ4Projection({})'.format(self.proj4_init)
+        return "_PROJ4Projection({})".format(self.proj4_init)
 
     @property
     def boundary(self):
         x0, x1, y0, y1 = self.bounds
-        return sgeom.LineString([(x0, y0), (x0, y1), (x1, y1), (x1, y0),
-                                 (x0, y0)])
+        return sgeom.LineString([(x0, y0), (x0, y1), (x1, y1), (x1, y0), (x0, y0)])
 
     @property
     def x_limits(self):
@@ -98,7 +97,7 @@ class _PROJ4Projection(ccrs.Projection):
     @property
     def threshold(self):
         x0, x1, y0, y1 = self.bounds
-        return min(x1 - x0, y1 - y0) / 100.
+        return min(x1 - x0, y1 - y0) / 100.0
 
 
 def _lesser_from_proj(proj4_terms, globe=None, bounds=None):
