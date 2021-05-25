@@ -265,7 +265,7 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
         applied_crs = set(self._set_crs_objects().values())
         num_crs = len(applied_crs)
         if num_crs == 1:
-            self._crs = tuple(applied_crs)[0]
+            self._crs = applied_crs.pop()
             return self._crs
         elif num_crs >= 1:
             raise RuntimeError("Dataset has more than one CRS")
