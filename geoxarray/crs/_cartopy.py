@@ -34,8 +34,7 @@ except ImportError:
 
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
-
-from ._proj4 import proj4_str_to_dict
+from pyproj import CRS
 
 try:
     from cartopy.crs import from_proj
@@ -66,7 +65,7 @@ def _globe_from_proj4(proj4_terms):
 # copy of class in cartopy (before it was released)
 class _PROJ4Projection(ccrs.Projection):
     def __init__(self, proj4_terms, globe=None, bounds=None):
-        terms = proj4_str_to_dict(proj4_terms)
+        terms = CRS.from_user_input(proj4_terms).to_dict()
         globe = _globe_from_proj4(terms) if globe is None else globe
 
         other_terms = []
