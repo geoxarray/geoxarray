@@ -203,4 +203,5 @@ intersphinx_mapping = {
     "dask": ("https://dask.pydata.org/en/latest", None),
     "matplotlib": ("https://matplotlib.org", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable", None),
+    "rioxarray": ("https://corteva.github.io/rioxarray/stable", None),
 }
