@@ -47,7 +47,16 @@ extensions = [
     "sphinx.ext.napoleon",
     "numpydoc",
     "sphinx_copybutton",
+    "sphinxcontrib.apidoc",
 ]
+
+# API docs
+apidoc_module_dir = "../../geoxarray"
+apidoc_output_dir = "api"
+apidoc_excluded_paths = [
+    "version.py",
+]
+apidoc_separate_modules = True
 
 # Configuration options for plot_directive. See:
 # https://github.com/matplotlib/matplotlib/blob/f3ed922d935751e08494e5fb5311d3050a3b637b/lib/matplotlib/sphinxext/plot_directive.py#L81

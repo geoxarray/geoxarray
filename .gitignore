@@ -82,3 +82,4 @@ target/
 # setuptools_scm files
 # this should be generated automatically when installed
 geoxarray/version.py
+docs/source/api/

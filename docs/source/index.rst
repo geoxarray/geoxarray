@@ -10,3 +10,4 @@ Geoxarray
    installation
    usage
    contributing
+   API <api/modules>
