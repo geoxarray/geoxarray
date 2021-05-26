@@ -61,33 +61,49 @@ Ready to contribute? Here's how to set up `geoxarray` for local development.
 
     $ git clone git@github.com:your_name_here/geoxarray.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed,
+   this is how you set up your fork for local development::
 
     $ mkvirtualenv geoxarray
     $ cd geoxarray/
-    $ python setup.py develop
+    $ pip install -e .
 
-4. Create a branch for local development::
+   Alternatively, if you are using a conda environment you can create a
+   sub-environment::
+
+    $ conda create -c conda-forge -n geoxarray python xarray pyproj
+    $ conda activate geoxarray
+    $ conda install -c conda-forge --only-deps geoxarray
+    $ pip install -e .
+
+4. Install pre-commit git hooks so various style checks and formatters are
+   automatically run when you make a commit::
+
+    $ pip install pre-commit
+    $ pre-commit install
+
+5. Create a branch for local development::
 
     $ git checkout -b name-of-your-bugfix-or-feature
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
+6. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
 
-    $ flake8 geoxarray tests
-    $ python setup.py test
-    $ tox
+    $ pytest geoxarray/tests
 
-   To get flake8 and tox, just pip install them into your virtualenv.
-
-6. Commit your changes and push your branch to GitHub::
+7. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+   If any of the pre-commit hooks have modified your files then your commit
+   may have failed. You'll need to re-add the changed files and reattempt your
+   commit.
+
+8. `Submit a pull request <https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request>`_
+   through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
