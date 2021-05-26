@@ -1,5 +1,8 @@
-GeoXArray
+GeoXarray
 =========
+
+
+`Release Notes <https://github.com/geoxarray/geoxarray/blob/main/CHANGELOG.md>`_
 
 .. toctree::
    :maxdepth: 1
