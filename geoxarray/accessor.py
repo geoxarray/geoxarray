@@ -301,9 +301,9 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         return obj_copy
 
     def set_dims(self, x=None, y=None, vertical=None, time=None, inplace=True):
-        """Set preferred dimension names inside the GeoXarray accessor.
+        """Set preferred dimension names inside the Geoxarray accessor.
 
-        GeoXarray will use this information for future operations.
+        Geoxarray will use this information for future operations.
         If any of the dimensions are not provided they will be found
         by best guess.
 

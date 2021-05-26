@@ -71,7 +71,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "GeoXarray"
+project = "Geoxarray"
 copyright = "2018, geoxarray"
 author = "geoxarray"
 
