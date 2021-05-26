@@ -1,6 +1,11 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  release:
+    types:
+      - published
+  push:
+  pull_request:
 
 jobs:
   lint:
@@ -54,6 +59,30 @@ jobs:
         run: |
           cd docs; \
           make html SPHINXOPTS="-W"
+
+      - name: deploy website
+        if: github.event_name == 'release'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GEOXARRAY_WEBSITE_TOKEN }}
+          publish_dir: docs/build/html
+          publish_branch: main
+          destination_dir: ${{ github.ref }}
+          allow_empty_commit: true
+          external_repository: geoxarray/geoxarray.github.io
+          full_commit_message: "Deploy geoxarray.github.io website for SHA:$GITHUB_SHA (Tag: $GITHUB_REF)"
+
+      - name: deploy website
+        if: github.event_name == 'push'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GEOXARRAY_WEBSITE_TOKEN }}
+          publish_dir: docs/build/html
+          publish_branch: main
+          destination_dir: latest
+          allow_empty_commit: true
+          external_repository: geoxarray/geoxarray.github.io
+          full_commit_message: "Deploy geoxarray.github.io website for SHA:$GITHUB_SHA (Tag: $GITHUB_REF)"
 
   test:
     runs-on: ${{ matrix.os }}
