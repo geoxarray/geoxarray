@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# GeoXArray documentation build configuration file, created by
+# Geoxarray documentation build configuration file, created by
 # sphinx-quickstart on Thu Jun 28 12:35:56 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -173,7 +173,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "geoxarray.tex", "GeoXArray Documentation", "Contributors", "manual"),
+    (master_doc, "geoxarray.tex", "Geoxarray Documentation", "Contributors", "manual"),
 ]
 
 
@@ -181,7 +181,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "geoxarray", "GeoXArray Documentation", [author], 1)]
+man_pages = [(master_doc, "geoxarray", "Geoxarray Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -193,7 +193,7 @@ texinfo_documents = [
     (
         master_doc,
         "geoxarray",
-        "GeoXArray Documentation",
+        "Geoxarray Documentation",
         author,
         "geoxarray",
         "Geolocation utilities for xarray objects",

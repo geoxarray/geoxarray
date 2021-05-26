@@ -35,8 +35,8 @@ is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-GeoXArray could always use more documentation, whether
-as part of the official GeoXArray docs, in docstrings,
+Geoxarray could always use more documentation, whether
+as part of the official Geoxarray docs, in docstrings,
 or even on the web in blog posts, articles, and such.
 
 Submit Feedback
