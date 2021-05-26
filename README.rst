@@ -8,6 +8,9 @@ GeoXarray
 .. image:: https://img.shields.io/pypi/v/geoxarray.svg
         :target: https://pypi.python.org/pypi/geoxarray
 
+.. image:: https://badges.gitter.im/geoxarray/geoxarray.svg
+    :target: https://gitter.im/geoxarray/geoxarray?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
+
 .. image:: https://coveralls.io/repos/github/geoxarray/geoxarray/badge.svg?branch=main
     :target: https://coveralls.io/github/geoxarray/geoxarray?branch=main
 
