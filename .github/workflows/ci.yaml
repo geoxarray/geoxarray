@@ -60,7 +60,7 @@ jobs:
           cd docs; \
           make html SPHINXOPTS="-W"
 
-      - name: deploy website
+      - name: Deploy Release Website
         if: github.event_name == 'release'
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -70,9 +70,9 @@ jobs:
           destination_dir: ${{ github.ref }}
           allow_empty_commit: true
           external_repository: geoxarray/geoxarray.github.io
-          full_commit_message: "Deploy geoxarray.github.io website for SHA:$GITHUB_SHA (Tag: $GITHUB_REF)"
+          full_commit_message: "Deploy geoxarray.github.io website for SHA:${{ github.sha }} (Ref: ${{ github.ref }})"
 
-      - name: deploy website
+      - name: Deploy 'latest' Website
         if: github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -82,7 +82,7 @@ jobs:
           destination_dir: latest
           allow_empty_commit: true
           external_repository: geoxarray/geoxarray.github.io
-          full_commit_message: "Deploy geoxarray.github.io website for SHA:$GITHUB_SHA (Tag: $GITHUB_REF)"
+          full_commit_message: "Deploy geoxarray.github.io website for SHA:${{ github.sha }} (Ref: ${{ github.ref }})"
 
   test:
     runs-on: ${{ matrix.os }}

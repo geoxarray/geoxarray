@@ -13,7 +13,7 @@ GeoXarray
 
 
 * Free software: Apache 2
-* Documentation: (COMING SOON!) https://geoxarray.github.io/geoxarray.
+* Documentation: https://geoxarray.github.io/.
 
 Geolocation utilities for xarray objects. GeoXarray is meant to bring
 together all of the features and conversions needed by various python
