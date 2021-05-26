@@ -6,6 +6,8 @@
 GeoXArray Documentation
 =======================
 
+Documentation coming soon...
+
 .. toctree::
    :maxdepth: 2
 
