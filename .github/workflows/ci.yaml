@@ -60,6 +60,13 @@ jobs:
           cd docs; \
           make html SPHINXOPTS="-W"
 
+#      - name: Prepare tag
+#        id: prepare_tag
+#        if: startsWith(github.ref, 'refs/tags/')
+#        run: |
+#          TAG_NAME="${GITHUB_REF##refs/tags/}"
+#          echo "::set-output name=tag_name::${TAG_NAME}"
+
       - name: Deploy Release Website
         if: github.event_name == 'release'
         uses: peaceiris/actions-gh-pages@v3
@@ -67,7 +74,8 @@ jobs:
           personal_token: ${{ secrets.GEOXARRAY_WEBSITE_TOKEN }}
           publish_dir: docs/build/html
           publish_branch: main
-          destination_dir: ${{ github.ref }}
+#          destination_dir: ${{ steps.prepare_tag.outputs.tag_name }}
+          destination_dir: stable
           allow_empty_commit: true
           external_repository: geoxarray/geoxarray.github.io
           full_commit_message: "Deploy geoxarray.github.io website for SHA:${{ github.sha }} (Ref: ${{ github.ref }})"
