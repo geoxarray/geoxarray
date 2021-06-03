@@ -42,4 +42,5 @@ GitHub: https://github.com/geoxarray/geoxarray
    installation
    usage
    contributing
+   faq
    API <api/modules>
