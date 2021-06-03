@@ -61,19 +61,19 @@ Ready to contribute? Here's how to set up `geoxarray` for local development.
 
     $ git clone git@github.com:your_name_here/geoxarray.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed,
-   this is how you set up your fork for local development::
-
-    $ mkvirtualenv geoxarray
-    $ cd geoxarray/
-    $ pip install -e .
-
-   Alternatively, if you are using a conda environment you can create a
-   sub-environment::
+3. Install your local copy into a local environment. If you are using a conda
+   environment you can create a sub-environment::
 
     $ conda create -c conda-forge -n geoxarray python xarray pyproj
     $ conda activate geoxarray
     $ conda install -c conda-forge --only-deps geoxarray
+    $ pip install -e .
+
+   Alternatively, if you are using virtualenv and assuming you have
+   virtualenvwrapper installed::
+
+    $ mkvirtualenv geoxarray
+    $ cd geoxarray/
     $ pip install -e .
 
 4. Install pre-commit git hooks so various style checks and formatters are
