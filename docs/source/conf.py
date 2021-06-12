@@ -19,6 +19,7 @@
 #
 import os
 import sys
+from unittest import mock
 
 from pkg_resources import get_distribution
 
@@ -50,13 +51,21 @@ extensions = [
     "sphinxcontrib.apidoc",
 ]
 
+# Mock
+for mod_name in ["cartopy", "cartopy.crs", "shapely", "shapely.geometry"]:
+    sys.modules[mod_name] = mock.Mock()
+
 # API docs
+# Include inherited class members
+os.environ["SPHINX_APIDOC_OPTIONS"] = "inherited-members"
 apidoc_module_dir = "../../geoxarray"
 apidoc_output_dir = "api"
 apidoc_excluded_paths = [
     "version.py",
 ]
 apidoc_separate_modules = True
+# Show private members
+# apidoc_extra_args = ["-P"]
 
 # Configuration options for plot_directive. See:
 # https://github.com/matplotlib/matplotlib/blob/f3ed922d935751e08494e5fb5311d3050a3b637b/lib/matplotlib/sphinxext/plot_directive.py#L81

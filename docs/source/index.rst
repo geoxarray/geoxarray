@@ -32,15 +32,51 @@ source projects including:
 * `The Pangeo Community <https://pangeo.io/>`_
 
 
-GitHub: https://github.com/geoxarray/geoxarray
 
-`Release Notes <https://github.com/geoxarray/geoxarray/blob/main/CHANGELOG.md>`_
+Geoxarray Documentation
+-----------------------
+
+This documentation is separated into four primary groups: Topics, Tutorials,
+How-Tos, and Reference material.
+
+* **Topics** contain higher-level information about the concepts involved in
+  geoxarray; why things work the way they do and how geoxarray approaches
+  problems.
+* :doc:`tutorials/index` will provide you a start to finish example of using
+  geoxarray to accomplish something without assuming you know anything about
+  geoxarray.
+* :doc:`howtos/index` are used to walk through specific use cases, but also
+  provide enough details so that the example can be used in other cases.
+* **Reference material** provides the lowest level details of how specific
+  pieces of geoxarray work. What classes and functions exist and every option
+  they provide. References will also point you to other parts of the project
+  like release and git information.
+
+For more on how this documentation is structured, see
+:ref:`this FAQ question <doc_organization>`.
 
 .. toctree::
+   :caption: Topics and Guides
    :maxdepth: 1
+   :glob:
 
    installation
-   usage
-   contributing
+   topics/*
    faq
+
+.. toctree::
+   :caption: Code Examples
+   :maxdepth: 2
+
+   tutorials/index
+   howtos/index
+
+.. toctree::
+   :caption: Reference
+   :maxdepth: 1
+
    API <api/modules>
+   contributing
+   Release Notes <https://github.com/geoxarray/geoxarray/blob/main/CHANGELOG.md>
+   GitHub Project <https://github.com/geoxarray/geoxarray>
+
