@@ -1,16 +1,83 @@
-.. Packaging Scientific Python documentation master file, created by
-   sphinx-quickstart on Thu Jun 28 12:35:56 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Geoxarray
+=========
 
-GeoXArray Documentation
-=======================
+Geoxarray is an open source Python library providing simple utilities and
+wrappers around common geospatial data workflows. These tools are
+primarily accessed through an "xarray accessor" available on
+xarray Dataset and DataArray objects from the ``.geo`` property.
+Geoxarray provides tools for standardizing dimension names, storage of
+coordinate reference system information, and operations like resampling
+and plotting.
 
-Documentation coming soon...
+.. warning::
+
+    Geoxarray is currently in a pre-alpha state and may not do most of what
+    you'd expect a library with the above description to do.
+
+.. warning::
+
+    Geoxarray has not had a release yet. Instructions referencing installing
+    from PyPI or conda-forge are there as placeholders and will not run
+    properly until there is a release.
+
+Geoxarray directly uses, borrows from, or is based on the ideas of other open
+source projects including:
+
+* `rioxarray <https://corteva.github.io/rioxarray/stable/>`_
+* `rasterio <https://rasterio.readthedocs.io/en/latest/>`_
+* `satpy <https://satpy.readthedocs.io/en/stable/>`_
+* `pyresample <https://pyresample.readthedocs.io/en/latest/>`_
+* `xgcm <https://xgcm.readthedocs.io/en/latest/>`_
+* `xesmf <https://xesmf.readthedocs.io/en/latest/>`_
+* `The Pangeo Community <https://pangeo.io/>`_
+
+
+
+Geoxarray Documentation
+-----------------------
+
+This documentation is separated into four primary groups: Topics, Tutorials,
+How-Tos, and Reference material.
+
+* **Topics** contain higher-level information about the concepts involved in
+  geoxarray; why things work the way they do and how geoxarray approaches
+  problems.
+* :doc:`tutorials/index` will provide you a start to finish example of using
+  geoxarray to accomplish something without assuming you know anything about
+  geoxarray.
+* :doc:`howtos/index` are used to walk through specific use cases, but also
+  provide enough details so that the example can be used in other cases.
+* **Reference material** provides the lowest level details of how specific
+  pieces of geoxarray work. What classes and functions exist and every option
+  they provide. References will also point you to other parts of the project
+  like release and git information.
+
+For more on how this documentation is structured, see
+:ref:`this FAQ question <doc_organization>`.
 
 .. toctree::
-   :maxdepth: 2
+   :caption: Topics and Guides
+   :maxdepth: 1
+   :glob:
 
    installation
-   usage
-   release-history
+   topics/*
+   faq
+
+.. toctree::
+   :caption: Code Examples
+   :maxdepth: 2
+
+   tutorials/index
+   howtos/index
+
+.. toctree::
+   :caption: Reference
+   :maxdepth: 1
+
+   API <api/modules>
+   contributing
+   roadmap
+   Release Notes <https://github.com/geoxarray/geoxarray/blob/main/CHANGELOG.md>
+   GitHub Project <https://github.com/geoxarray/geoxarray>
+

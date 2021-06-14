@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# GeoXArray documentation build configuration file, created by
+# Geoxarray documentation build configuration file, created by
 # sphinx-quickstart on Thu Jun 28 12:35:56 2018.
 #
 # This file is execfile()d with the current directory set to its
@@ -19,6 +19,7 @@
 #
 import os
 import sys
+from unittest import mock
 
 from pkg_resources import get_distribution
 
@@ -36,6 +37,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
     "sphinx.ext.autosummary",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
@@ -47,7 +49,24 @@ extensions = [
     "sphinx.ext.napoleon",
     "numpydoc",
     "sphinx_copybutton",
+    "sphinxcontrib.apidoc",
 ]
+
+# Mock
+for mod_name in ["cartopy", "cartopy.crs", "shapely", "shapely.geometry"]:
+    sys.modules[mod_name] = mock.Mock()
+
+# API docs
+# Include inherited class members
+os.environ["SPHINX_APIDOC_OPTIONS"] = "inherited-members"
+apidoc_module_dir = "../../geoxarray"
+apidoc_output_dir = "api"
+apidoc_excluded_paths = [
+    "version.py",
+]
+apidoc_separate_modules = True
+# Show private members
+# apidoc_extra_args = ["-P"]
 
 # Configuration options for plot_directive. See:
 # https://github.com/matplotlib/matplotlib/blob/f3ed922d935751e08494e5fb5311d3050a3b637b/lib/matplotlib/sphinxext/plot_directive.py#L81
@@ -71,7 +90,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "GeoXarray"
+project = "Geoxarray"
 copyright = "2018, geoxarray"
 author = "geoxarray"
 
@@ -164,7 +183,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "geoxarray.tex", "GeoXArray Documentation", "Contributors", "manual"),
+    (master_doc, "geoxarray.tex", "Geoxarray Documentation", "Contributors", "manual"),
 ]
 
 
@@ -172,7 +191,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "geoxarray", "GeoXArray Documentation", [author], 1)]
+man_pages = [(master_doc, "geoxarray", "Geoxarray Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output -------------------------------------------
@@ -184,7 +203,7 @@ texinfo_documents = [
     (
         master_doc,
         "geoxarray",
-        "GeoXArray Documentation",
+        "Geoxarray Documentation",
         author,
         "geoxarray",
         "Geolocation utilities for xarray objects",
@@ -203,4 +222,5 @@ intersphinx_mapping = {
     "dask": ("https://dask.pydata.org/en/latest", None),
     "matplotlib": ("https://matplotlib.org", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable", None),
+    "rioxarray": ("https://corteva.github.io/rioxarray/stable", None),
 }

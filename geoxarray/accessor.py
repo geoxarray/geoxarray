@@ -162,11 +162,20 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
 
         Parameters
         ----------
-        x
-        y
-        vertical
-        time
-        inplace
+        x : str or None
+            Name of the X dimension. This dimension usually exists with
+            a corresponding coordinate variable in meters for
+            gridded/projected data.
+        y : str or None
+            Name of the Y dimension. Similar to the X dimension but on the Y
+            axis.
+        vertical : str or None
+            Name of the vertical or Z dimension. This dimension usually exists
+            with a corresponding coordinate variable in meters for altitude
+            or pressure level (ex. hPa, millibar, etc).
+        time : str or None
+            Name of the time dimension. This dimension usually exists with a
+            corresponding coordinate variable with time objects.
 
         """
         all_dims = {
@@ -301,9 +310,9 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         return obj_copy
 
     def set_dims(self, x=None, y=None, vertical=None, time=None, inplace=True):
-        """Set preferred dimension names inside the GeoXarray accessor.
+        """Set preferred dimension names inside the Geoxarray accessor.
 
-        GeoXarray will use this information for future operations.
+        Geoxarray will use this information for future operations.
         If any of the dimensions are not provided they will be found
         by best guess.
 
@@ -326,6 +335,11 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         time : str or None
             Name of the time dimension. This dimension usually exists with a
             corresponding coordinate variable with time objects.
+
+        See Also
+        --------
+        GeoDataArrayAccessor.dims : Show the current dimensions as Geoxarray knows them
+        GeoDataArrayAccessor.write_dims : Rename dimensions to match Geoxarray preferred dimension names
 
         """
         obj = self._get_obj(inplace)
