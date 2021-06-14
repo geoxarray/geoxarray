@@ -77,6 +77,7 @@ For more on how this documentation is structured, see
 
    API <api/modules>
    contributing
+   roadmap
    Release Notes <https://github.com/geoxarray/geoxarray/blob/main/CHANGELOG.md>
    GitHub Project <https://github.com/geoxarray/geoxarray>
 
