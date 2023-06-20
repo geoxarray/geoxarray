@@ -23,6 +23,21 @@ repos:
       - id: flake8
         language_version: python3
         additional_dependencies: [flake8-docstrings, flake8-debugger, flake8-bugbear]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.3.0
+    hooks:
+      - id: mypy
+        # Override default --ignore-missing-imports
+        # Use pyproject.toml if possible instead of adding command line parameters here
+        args: [ --warn-unused-configs ]
+        additional_dependencies:
+          # Type stubs
+          - types-docutils
+          - types-PyYAML
+          - types-setuptools
+          # Typed libraries
+          - numpy
+          - pytest
 
 ci:
   # To trigger manually, comment on a pull request with "pre-commit.ci autofix"
