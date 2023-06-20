@@ -393,7 +393,8 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             warnings.warn(
                 "'grid_mapping' attribute found, but no grid_mapping variable"
                 " was provided. Use 'data_arr.geo.set_cf_grid_mapping' to "
-                "provide one. Will search other metadata for CRS information."
+                "provide one. Will search other metadata for CRS information.",
+                stacklevel=2,
             )
 
         # TODO: Check for lon/lat 2D coordinate arrays
