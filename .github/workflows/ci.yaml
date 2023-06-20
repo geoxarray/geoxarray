@@ -41,10 +41,10 @@ jobs:
       - name: Setup Conda Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniconda-version: "latest"
-          python-version: "3.8"
-          mamba-version: "*"
-          channels: conda-forge,defaults
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          python-version: "3.11"
           environment-file: continuous_integration/environment.yaml
           activate-environment: test-environment
 
@@ -100,10 +100,10 @@ jobs:
       fail-fast: true
       matrix:
         os: ["windows-latest", "ubuntu-latest", "macos-latest"]
-        python-version: ["3.7", "3.8"]
+        python-version: ["3.9", "3.11"]
         experimental: [false]
         include:
-          - python-version: "3.8"
+          - python-version: "3.11"
             os: "ubuntu-latest"
             experimental: true
 
@@ -120,10 +120,10 @@ jobs:
       - name: Setup Conda Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniconda-version: "latest"
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
           python-version: ${{ matrix.python-version }}
-          mamba-version: "*"
-          channels: conda-forge,defaults
           environment-file: continuous_integration/environment.yaml
           activate-environment: test-environment
 
@@ -157,17 +157,11 @@ jobs:
       - name: Run unit tests
         shell: bash -l {0}
         run: |
-          pytest --cov=geoxarray geoxarray/tests --cov-report=xml
-
-      - name: Upload unittest coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          flags: unittests
-          file: ./coverage.xml
-          env_vars: OS,PYTHON_VERSION,UNSTABLE
+          pytest --cov=geoxarray geoxarray/tests
 
       - name: Coveralls Parallel
-        uses: AndreMiras/coveralls-python-action@develop
+        # See https://github.com/AndreMiras/coveralls-python-action/pull/16
+        uses: djhoese/coveralls-python-action@feature-cython-coverage
         with:
           flag-name: run-${{ matrix.test_number }}
           parallel: true
@@ -178,7 +172,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: AndreMiras/coveralls-python-action@develop
+        # See https://github.com/AndreMiras/coveralls-python-action/pull/16
+        uses: djhoese/coveralls-python-action@feature-cython-coverage
         with:
           parallel-finished: true
 

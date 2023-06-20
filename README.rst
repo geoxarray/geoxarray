@@ -14,6 +14,10 @@ Geoxarray
 .. image:: https://coveralls.io/repos/github/geoxarray/geoxarray/badge.svg?branch=main
     :target: https://coveralls.io/github/geoxarray/geoxarray?branch=main
 
+.. image:: https://results.pre-commit.ci/badge/github/geoxarray/geoxarray/main.svg
+   :target: https://results.pre-commit.ci/latest/github/geoxarray/geoxarray/main
+   :alt: pre-commit.ci status
+
 
 * Free software: Apache 2
 * Documentation: https://geoxarray.github.io/.
