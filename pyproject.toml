@@ -3,3 +3,28 @@ requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4", 'setuptools_
 
 [tool.setuptools_scm]
 write_to = "geoxarray/version.py"
+
+[tool.black]
+line-length = 120
+exclude = '''
+(
+  \.git
+  | build
+  | dist
+  | geoxarray/version\.py
+)
+
+'''
+
+[tool.isort]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+profile = "black"
+skip_gitignore = true
+force_to_top = ["true"]
+default_section = "THIRDPARTY"
+known_first_party = ["geoxarray"]
+skip = ["geoxarray/version.py"]
+
+[tool.coverage.run]
+relative_files = true
+omit = ["geoxarray/version.py"]
