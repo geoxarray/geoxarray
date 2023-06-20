@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # Copyright geoxarray Developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +45,6 @@ to other formats (CF compatible NetCDF file).
 from __future__ import annotations
 
 import warnings
-from typing import Optional
 
 import xarray as xr
 from pyproj import CRS
@@ -69,7 +67,7 @@ except ImportError:
     has_rasterio = False
 
 
-class _SharedGeoAccessor(object):
+class _SharedGeoAccessor:
     """Accessor functionality shared between Dataset and DataArray objects."""
 
     def __init__(self, xarray_obj):
@@ -152,10 +150,10 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
 
     def set_dims(
         self,
-        x: Optional[str] = None,
-        y: Optional[str] = None,
-        vertical: Optional[str] = None,
-        time: Optional[str] = None,
+        x: str | None = None,
+        y: str | None = None,
+        vertical: str | None = None,
+        time: str | None = None,
         inplace: bool = False,
     ):
         """Tell geoxarray the names of the provided dimensions in this Dataset.
@@ -289,7 +287,7 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
     def __init__(self, data_arr_obj):
         """Initialize a 'best guess' dimension mapping to preferred dimension names."""
         self._is_gridded = None
-        super(GeoDataArrayAccessor, self).__init__(data_arr_obj)
+        super().__init__(data_arr_obj)
 
     def _get_obj(self, inplace):
         """Get the object to modify.

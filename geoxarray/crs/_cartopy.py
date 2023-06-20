@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # Copyright geoxarray Developers
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,12 +71,12 @@ class _PROJ4Projection(ccrs.Projection):
         for term in terms.items():
             if term[0] not in _GLOBE_PARAMS:
                 other_terms.append(term)
-        super(_PROJ4Projection, self).__init__(other_terms, globe)
+        super().__init__(other_terms, globe)
 
         self.bounds = bounds
 
     def __repr__(self):
-        return "_PROJ4Projection({})".format(self.proj4_init)
+        return f"_PROJ4Projection({self.proj4_init})"
 
     @property
     def boundary(self):
