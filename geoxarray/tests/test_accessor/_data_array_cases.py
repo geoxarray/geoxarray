@@ -116,6 +116,25 @@ def cf_y_x():
     )
 
 
+def cf_y_x_with_crs_coord():
+    data_arr = cf_y_x()
+    data_arr.coords["a_grid_map_var"] = xr.DataArray(
+        -1,
+        attrs={
+            "long_name": "GOES-R ABI fixed grid projection",
+            "grid_mapping_name": "geostationary",
+            "perspective_point_height": 35786023.0,
+            "semi_major_axis": 6378137.0,
+            "semi_minor_axis": 6356752.31414,
+            "inverse_flattening": 298.2572221,
+            "latitude_of_projection_origin": 0.0,
+            "longitude_of_projection_origin": -89.5,
+            "sweep_angle_axis": "x",
+        },
+    )
+    return data_arr
+
+
 ALL_CF_2D_CASES = [
     cf_y_x,
 ]

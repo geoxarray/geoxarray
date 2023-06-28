@@ -15,9 +15,11 @@
 """Tests for the xarray DataArray-specific accessor."""
 
 import pytest
+from pyproj import CRS
 
 from ._data_array_cases import (
     cf_y_x,
+    cf_y_x_with_crs_coord,
     geotiff_b_a,
     geotiff_bands_y_x,
     geotiff_x_y,
@@ -55,3 +57,10 @@ def test_default_dim_decisions(get_data_array, exp_dims):
     assert data_arr.geo.sizes["x"] == X_DIM_SIZE
     if "vertical" in exp_dims:
         assert data_arr.geo.sizes["vertical"] == ALT_DIM_SIZE
+
+
+# TODO: Test with CF with no crs coord
+# TODO: Test with no grid mapping at all (should have an empty CRS?) See what rioxarray does
+def test_crs_from_cf_coordinate():
+    data_arr = cf_y_x_with_crs_coord()
+    assert isinstance(data_arr.geo.crs, CRS)

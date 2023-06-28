@@ -45,9 +45,11 @@ to other formats (CF compatible NetCDF file).
 from __future__ import annotations
 
 import warnings
+from typing import Any, Literal
 
 import xarray as xr
 from pyproj import CRS
+from pyproj.exceptions import CRSError
 
 try:
     from pyresample.geometry import AreaDefinition, SwathDefinition
@@ -67,13 +69,16 @@ except ImportError:
     has_rasterio = False
 
 
+DEFAULT_GRID_MAPPING_VARIABLE_NAME = "spatial_ref"
+
+
 class _SharedGeoAccessor:
     """Accessor functionality shared between Dataset and DataArray objects."""
 
     def __init__(self, xarray_obj):
         """Set handle for xarray object."""
         self._obj = xarray_obj
-        self._crs = None
+        self._crs: CRS | Literal[False] | None = None
         self._x_dim = None
         self._y_dim = None
         self._vertical_dim = None
@@ -341,6 +346,15 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
 
         """
         obj = self._get_obj(inplace)
+        self._set_x_dim(obj, x)
+        self._set_y_dim(obj, y)
+        self._set_2d_dims(obj)
+        self._set_vertical_dims(obj, vertical)
+        self._set_temporal_dims(obj, time)
+        obj.geo._dim_map = None
+        return obj
+
+    def _set_x_dim(self, obj, x):
         dims = obj.dims
         if x is None and self._x_dim is None:
             if "x" in dims:
@@ -349,6 +363,8 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             assert x in dims
             obj.geo._x_dim = x
 
+    def _set_y_dim(self, obj, y):
+        dims = obj.dims
         if y is None and self._y_dim is None:
             if "y" in dims:
                 obj.geo._y_dim = "y"
@@ -356,10 +372,14 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             assert y in dims
             obj.geo._y_dim = y
 
+    def _set_2d_dims(self, obj):
+        dims = obj.dims
         if len(dims) == 2 and self._x_dim is None and self._y_dim is None:
             obj.geo._y_dim = dims[0]
             obj.geo._x_dim = dims[1]
 
+    def _set_vertical_dims(self, obj, vertical):
+        dims = obj.dims
         if vertical is None and self._vertical_dim is None:
             for z_dim in ("z", "vertical", "pressure_level"):
                 if z_dim in dims:
@@ -369,6 +389,8 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             assert vertical in dims
             obj.geo._vertical_dim = vertical
 
+    def _set_temporal_dims(self, obj, time):
+        dims = obj.dims
         if time is None and self._time_dim is None:
             for t_dim in ("time", "t"):
                 if t_dim in dims:
@@ -378,53 +400,93 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             assert time in dims
             obj.geo._time_dim = time
 
-        obj.geo._dim_map = None
-        return obj
-
     @property
     def crs(self):
         if self._crs is False:
+            # we've tried to find the CRS, there isn't one
             return None
         elif self._crs is not None:
+            # we've already determined what the CRS is, return it
             return self._crs
 
-        grid_mapping = self._obj.attrs.get("grid_mapping")
-        if grid_mapping:
+        crs_methods = (
+            self._get_crs_from_grid_mapping,
+            self._get_crs_from_pyresample,
+        )
+        for crs_method in crs_methods:
+            crs = crs_method()
+            if crs is not None:
+                self._crs = crs
+                break
+        else:
+            self._crs = False
+        return self._crs
+
+    def _get_crs_from_grid_mapping(self):
+        gm_var = self._get_gm_var()
+        for crs_attr in ("spatial_ref", "crs_wkt"):
+            try:
+                crs_info = gm_var.attrs[crs_attr]
+            except KeyError:
+                continue
+            crs = CRS.from_wkt(crs_info)
+            return crs
+        else:
+            return self._get_crs_from_cf()
+
+    def _get_gm_var(self):
+        gm_var_name = self.grid_mapping
+        if gm_var_name not in self._obj.coords:
             warnings.warn(
-                "'grid_mapping' attribute found, but no grid_mapping variable"
-                " was provided. Use 'data_arr.geo.set_cf_grid_mapping' to "
+                "'grid_mapping' attribute found, but the variable it refers to "
+                f"{gm_var_name} is not a coordinate variable. "
+                "Use 'data_arr.geo.set_cf_grid_mapping' to "
                 "provide one. Will search other metadata for CRS information.",
                 stacklevel=2,
             )
+        return self._obj.coords[gm_var_name]
 
-        # TODO: Check for lon/lat 2D coordinate arrays
-        coords_crs = self._obj.coords.get("crs")
-        attrs_crs = self._obj.attrs.get("crs")
+    def _get_crs_from_cf(self):
+        try:
+            return CRS.from_cf(self._obj.coords[self.grid_mapping].attrs)
+        except (KeyError, CRSError):
+            return None
+
+    def _get_crs_from_pyresample(self):
+        if has_pyresample is None:
+            return None
         area = self._obj.attrs.get("area")
-        if coords_crs is not None:
-            crs = CRS.from_user_input(coords_crs)
-        elif attrs_crs is not None:
-            crs = CRS.from_user_input(attrs_crs)
-        elif has_pyresample and isinstance(area, AreaDefinition):
-            crs = area.crs
-        elif has_pyresample and isinstance(area, SwathDefinition):
-            # TODO: Convert and gather information from definitions
-            self._is_gridded = False
-            crs = False
-        else:
-            crs = False
+        if area is None:
+            return None
+        if isinstance(area, AreaDefinition):
+            return area.crs
+        if isinstance(area, SwathDefinition):
+            # TODO: Set whether or not things are gridded?
+            return area.crs
+        return None
 
-        self._crs = crs
-        return self._crs if self._crs is not False else None
-
-    @crs.setter
-    def crs(self, value):
+    def set_crs(self, value: Any):
         """Force the CRS for this object.
 
         Set to `None` for the CRS to be recalculated.
 
         """
-        self._crs = value
+        crs = CRS.from_user_input(value)
+        # TODO: Add inplace
+        self._crs = crs
+
+    @property
+    def grid_mapping(self) -> str:
+        """Name of a grid mapping variable associated with this DataArray.
+
+        If not found, defaults to "spatial_ref".
+
+        """
+        gm_var_name = self._obj.encoding.get("grid_mapping") or self._obj.attrs.get("grid_mapping")
+        if gm_var_name is not None:
+            return gm_var_name
+        # TODO: Support other grid mapping variable names
+        return DEFAULT_GRID_MAPPING_VARIABLE_NAME
 
     def set_cf_grid_mapping(self, grid_mapping_var, errcheck=False):
         """Set CRS information based on CF standard 'grid_mapping' variable.
@@ -437,6 +499,8 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         # XXX: Should this just be part of the CRS setter? kwargs can't be passed then
         if not isinstance(grid_mapping_var, dict):
             grid_mapping_var = grid_mapping_var.attrs
+        # XXX: Should we set something in the coords or attrs when this is applied?
+        # TODO: Replace with `write_grid_mapping`?
         self._crs = CRS.from_cf(grid_mapping_var, errcheck=errcheck)
 
     def get_lonlats(self, chunks=None):
