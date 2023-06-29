@@ -166,4 +166,9 @@ ALL_GX_2D_CASES = [
     gx_y_x,
 ]
 
+
+def no_crs_no_dims_2d():
+    return xr.DataArray(da.empty((Y_DIM_SIZE, X_DIM_SIZE)))
+
+
 ALL_DATA_ARRAY_2D_CASES = ALL_GEOTIFF_2D_CASES + ALL_RAW_2D_CASES + ALL_CF_2D_CASES

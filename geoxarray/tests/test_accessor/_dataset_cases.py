@@ -66,7 +66,7 @@ def cf_1gm_geos_b_a():
                 dims=("a",),
                 attrs={"units": "rad"},
             ),
-            "t": np.array("2017-09-02T18:03:34", dtype=np.datetime64),
+            "t": np.array("2017-09-02T18:03:34", dtype="datetime64[ns]"),
             "band_id": xr.DataArray(np.array([1], dtype=np.uint8), dims=("band",), attrs={"units": "1"}),
         },
     )

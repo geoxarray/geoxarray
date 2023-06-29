@@ -420,10 +420,13 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
                 break
         else:
             self._crs = False
+            return None
         return self._crs
 
     def _get_crs_from_grid_mapping(self):
         gm_var = self._get_gm_var()
+        if gm_var is None:
+            return None
         for crs_attr in ("spatial_ref", "crs_wkt"):
             try:
                 crs_info = gm_var.attrs[crs_attr]
@@ -444,6 +447,7 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
                 "provide one. Will search other metadata for CRS information.",
                 stacklevel=2,
             )
+            return None
         return self._obj.coords[gm_var_name]
 
     def _get_crs_from_cf(self):

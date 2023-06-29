@@ -29,6 +29,7 @@ from ._data_array_cases import (
     misc_time_z_y_x,
     misc_y_x_z,
     misc_z_y_x,
+    no_crs_no_dims_2d,
     raw_coords_lats1d_lons1d,
 )
 from ._shared import ALT_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
@@ -59,8 +60,16 @@ def test_default_dim_decisions(get_data_array, exp_dims):
         assert data_arr.geo.sizes["vertical"] == ALT_DIM_SIZE
 
 
+def test_crs_no_crs():
+    data_arr = no_crs_no_dims_2d()
+    assert data_arr.geo._crs is None  # assert we haven't checked CRS info yet
+    with pytest.warns(UserWarning, match=r"'grid_mapping' attribute found, but"):
+        assert data_arr.geo.crs is None
+    assert data_arr.geo._crs is False  # assert "cached" CRS findings
+    assert data_arr.geo.crs is None
+
+
 # TODO: Test with CF with no crs coord
-# TODO: Test with no grid mapping at all (should have an empty CRS?) See what rioxarray does
 def test_crs_from_cf_coordinate():
     data_arr = cf_y_x_with_crs_coord()
     assert isinstance(data_arr.geo.crs, CRS)
