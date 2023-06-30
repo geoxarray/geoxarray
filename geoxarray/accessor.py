@@ -449,6 +449,8 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
 
     def _get_gm_var(self):
         gm_var_name = self.grid_mapping
+        if gm_var_name is None:
+            return None
         if gm_var_name not in self._obj.coords:
             warnings.warn(
                 "'grid_mapping' attribute found, but the variable it refers to "
@@ -462,7 +464,7 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
 
     def _get_crs_from_cf(self):
         try:
-            return CRS.from_cf(self._obj.coords[self.grid_mapping].attrs)
+            return CRS.from_cf(self._obj.coords[self.grid_mapping or DEFAULT_GRID_MAPPING_VARIABLE_NAME].attrs)
         except (KeyError, CRSError):
             return None
 
@@ -480,17 +482,20 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         return None
 
     @property
-    def grid_mapping(self) -> str:
+    def grid_mapping(self) -> str | None:
         """Name of a grid mapping variable associated with this DataArray.
 
-        If not found, defaults to "spatial_ref".
+        Returns
+        -------
+        Grid mapping variable name defined in the xarray object. If not found,
+        None is returned.
 
         """
         gm_var_name = self._obj.encoding.get("grid_mapping") or self._obj.attrs.get("grid_mapping")
         if gm_var_name is not None:
             return gm_var_name
         # TODO: Support other grid mapping variable names
-        return DEFAULT_GRID_MAPPING_VARIABLE_NAME
+        return None
 
     def set_cf_grid_mapping(self, grid_mapping_var, errcheck=False):
         """Set CRS information based on CF standard 'grid_mapping' variable.

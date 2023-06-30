@@ -65,13 +65,20 @@ def test_default_dim_decisions(get_data_array, exp_dims):
 def test_crs_no_crs():
     data_arr = no_crs_no_dims_2d()
     assert data_arr.geo._crs is None  # assert we haven't checked CRS info yet
+    assert data_arr.geo.crs is None
+    assert data_arr.geo._crs is False  # assert "cached" CRS findings
+    assert data_arr.geo.crs is None
+
+
+def test_crs_missing_grid_mapping():
+    data_arr = cf_y_x()
+    assert data_arr.geo._crs is None  # assert we haven't checked CRS info yet
     with pytest.warns(UserWarning, match=r"'grid_mapping' attribute found, but"):
         assert data_arr.geo.crs is None
     assert data_arr.geo._crs is False  # assert "cached" CRS findings
     assert data_arr.geo.crs is None
 
 
-# TODO: Test with CF with no crs coord
 @pytest.mark.parametrize("data_func", [cf_y_x_with_crs_coord, cf_y_x_with_crs_wkt_coord])
 def test_crs_from_cf_coordinate(data_func):
     data_arr = data_func()
