@@ -135,6 +135,19 @@ def cf_y_x_with_crs_coord():
     return data_arr
 
 
+def cf_y_x_with_crs_wkt_coord():
+    data_arr = cf_y_x_with_crs_coord()
+    crs = CRS.from_cf(data_arr.coords["a_grid_map_var"].attrs)
+    data_arr.coords["a_grid_map_var"].attrs["crs_wkt"] = crs.to_wkt()
+    return data_arr
+
+
+def cf_y_x_with_bad_crs():
+    data_arr = cf_y_x_with_crs_coord()
+    del data_arr.coords["a_grid_map_var"].attrs["grid_mapping_name"]
+    return data_arr
+
+
 ALL_CF_2D_CASES = [
     cf_y_x,
 ]

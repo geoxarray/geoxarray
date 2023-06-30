@@ -19,7 +19,9 @@ from pyproj import CRS
 
 from ._data_array_cases import (
     cf_y_x,
+    cf_y_x_with_bad_crs,
     cf_y_x_with_crs_coord,
+    cf_y_x_with_crs_wkt_coord,
     geotiff_b_a,
     geotiff_bands_y_x,
     geotiff_x_y,
@@ -70,6 +72,13 @@ def test_crs_no_crs():
 
 
 # TODO: Test with CF with no crs coord
-def test_crs_from_cf_coordinate():
-    data_arr = cf_y_x_with_crs_coord()
+@pytest.mark.parametrize("data_func", [cf_y_x_with_crs_coord, cf_y_x_with_crs_wkt_coord])
+def test_crs_from_cf_coordinate(data_func):
+    data_arr = data_func()
     assert isinstance(data_arr.geo.crs, CRS)
+    assert isinstance(data_arr.geo.crs, CRS)  # get cached CRS
+
+
+def test_bad_crs_from_cf_coordinate():
+    data_arr = cf_y_x_with_bad_crs()
+    assert data_arr.geo.crs is None
