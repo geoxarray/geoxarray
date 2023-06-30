@@ -45,7 +45,7 @@ to other formats (CF compatible NetCDF file).
 from __future__ import annotations
 
 import warnings
-from typing import Any, Literal
+from typing import Literal
 
 import xarray as xr
 from pyproj import CRS
@@ -312,7 +312,14 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         obj_copy.geo._is_gridded = self._is_gridded
         return obj_copy
 
-    def set_dims(self, x=None, y=None, vertical=None, time=None, inplace=True):
+    def set_dims(
+        self,
+        x: None | str = None,
+        y: None | str = None,
+        vertical: None | str = None,
+        time: None | str = None,
+        inplace: bool = True,
+    ) -> xr.DataArray:
         """Set preferred dimension names inside the Geoxarray accessor.
 
         Geoxarray will use this information for future operations.
@@ -324,20 +331,23 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
 
         Parameters
         ----------
-        x : str or None
+        x:
             Name of the X dimension. This dimension usually exists with
             a corresponding coordinate variable in meters for
             gridded/projected data.
-        y : str or None
+        y:
             Name of the Y dimension. Similar to the X dimension but on the Y
             axis.
-        vertical : str or None
+        vertical:
             Name of the vertical or Z dimension. This dimension usually exists
             with a corresponding coordinate variable in meters for altitude
             or pressure level (ex. hPa, millibar, etc).
-        time : str or None
+        time:
             Name of the time dimension. This dimension usually exists with a
             corresponding coordinate variable with time objects.
+        inplace:
+            If True, changes are made to the current xarray object. Otherwise,
+            a copy of the object is made first. Default is False.
 
         See Also
         --------
@@ -401,7 +411,7 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             obj.geo._time_dim = time
 
     @property
-    def crs(self):
+    def crs(self) -> None | CRS:
         if self._crs is False:
             # we've tried to find the CRS, there isn't one
             return None
@@ -468,16 +478,6 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             # TODO: Set whether or not things are gridded?
             return area.crs
         return None
-
-    def set_crs(self, value: Any):
-        """Force the CRS for this object.
-
-        Set to `None` for the CRS to be recalculated.
-
-        """
-        crs = CRS.from_user_input(value)
-        # TODO: Add inplace
-        self._crs = crs
 
     @property
     def grid_mapping(self) -> str:
