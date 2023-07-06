@@ -96,13 +96,14 @@ def test_bad_crs_from_cf_coordinate():
 def test_no_crs_write_crs(inplace, gmap_var_name):
     data_arr = no_crs_no_dims_2d()
     new_crs = CRS.from_epsg(4326)
+    exp_cf_params = new_crs.to_cf()
+
     assert data_arr.geo.crs is None
     new_data_arr = data_arr.geo.write_crs(new_crs, grid_mapping_name=gmap_var_name, inplace=inplace)
 
     assert new_data_arr is data_arr if inplace else new_data_arr is not data_arr
     assert new_data_arr.geo.crs == new_crs
     gmap_var = new_data_arr.coords[gmap_var_name or "spatial_ref"]
-    exp_cf_params = new_crs.to_cf()
     assert set(exp_cf_params.items()).issubset(set(gmap_var.attrs.items()))
     assert gmap_var.attrs["crs_wkt"] == new_crs.to_wkt()
     assert gmap_var.attrs["spatial_ref"] == new_crs.to_wkt()
