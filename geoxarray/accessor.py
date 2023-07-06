@@ -45,7 +45,7 @@ to other formats (CF compatible NetCDF file).
 from __future__ import annotations
 
 import warnings
-from typing import Literal
+from typing import Any, Literal
 
 import xarray as xr
 from pyproj import CRS
@@ -480,6 +480,29 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             # TODO: Set whether or not things are gridded?
             return area.crs
         return None
+
+    def write_crs(self, new_crs_info: Any, grid_mapping_name: str | None = None, inplace: bool = False) -> xr.DataArray:
+        """Write the CRS to the xarray object in a CF compliant manner.
+
+        Much of this code is copied from the rioxarray project and is under the Apache 2.0 license.
+        A copy of this license is available in the source file ``LICENSE_rioxarray``.
+
+        """
+        obj = self._get_obj(inplace)
+        crs = CRS.from_user_input(new_crs_info)
+        obj.geo._crs = crs
+        grid_mapping_var_name = self.grid_mapping if grid_mapping_name is None else grid_mapping_name
+        if grid_mapping_var_name is None:
+            grid_mapping_var_name = DEFAULT_GRID_MAPPING_VARIABLE_NAME
+
+        gm_attrs = crs.to_cf()
+        crs_wkt = crs.to_wkt()
+        gm_attrs["crs_wkt"] = crs_wkt
+        gm_attrs["spatial_ref"] = crs_wkt
+
+        obj.coords[grid_mapping_var_name] = xr.Variable((), 0)
+        obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
+        return obj
 
     @property
     def grid_mapping(self) -> str | None:
