@@ -106,3 +106,5 @@ def test_no_crs_write_crs(inplace, gmap_var_name):
     assert set(exp_cf_params.items()).issubset(set(gmap_var.attrs.items()))
     assert gmap_var.attrs["crs_wkt"] == new_crs.to_wkt()
     assert gmap_var.attrs["spatial_ref"] == new_crs.to_wkt()
+    assert new_data_arr.encoding["grid_mapping"] == gmap_var_name or "spatial_ref"
+    assert "grid_mapping" not in new_data_arr.attrs

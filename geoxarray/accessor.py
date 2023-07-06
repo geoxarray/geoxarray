@@ -487,6 +487,21 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         Much of this code is copied from the rioxarray project and is under the Apache 2.0 license.
         A copy of this license is available in the source file ``LICENSE_rioxarray``.
 
+        Parameters
+        ----------
+        new_crs_info:
+            Coordinate Reference System (CRS) information to write to the
+            Xarray object. Can be a :class:`pyproj.CRS` object or anything
+            understood by the :meth:`pyproj.CRS.from_user_input` method.
+        grid_mapping_name:
+            Name to use for the coordinate variable created and written by this
+            method. The coordinate variable, also known as the grid mapping
+            variable, will have this name when written to a NetCDF file.
+            Defaults to "spatial_ref".
+        inplace:
+            Whether to modify the current Xarray object inplace or to create
+            a copy first. Default (``False``) is to make a copy.
+
         """
         obj = self._get_obj(inplace)
         crs = CRS.from_user_input(new_crs_info)
@@ -497,11 +512,14 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
 
         gm_attrs = crs.to_cf()
         crs_wkt = crs.to_wkt()
-        gm_attrs["crs_wkt"] = crs_wkt
-        gm_attrs["spatial_ref"] = crs_wkt
+        gm_attrs["crs_wkt"] = crs_wkt  # CF compatibility
+        gm_attrs["spatial_ref"] = crs_wkt  # GDAL support
 
         obj.coords[grid_mapping_var_name] = xr.Variable((), 0)
         obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
+
+        obj.attrs.pop("grid_mapping", None)
+        obj.encoding["grid_mapping"] = grid_mapping_var_name
         return obj
 
     @property
@@ -519,21 +537,6 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
             return gm_var_name
         # TODO: Support other grid mapping variable names
         return None
-
-    def set_cf_grid_mapping(self, grid_mapping_var, errcheck=False):
-        """Set CRS information based on CF standard 'grid_mapping' variable.
-
-        See :meth:`pyproj.crs.CRS.from_cf` for details. Argument can be
-        DataArray or Variable object for the grid mapping variable or a
-        dictionary of CF standard grid mapping attributes.
-
-        """
-        # XXX: Should this just be part of the CRS setter? kwargs can't be passed then
-        if not isinstance(grid_mapping_var, dict):
-            grid_mapping_var = grid_mapping_var.attrs
-        # XXX: Should we set something in the coords or attrs when this is applied?
-        # TODO: Replace with `write_grid_mapping`?
-        self._crs = CRS.from_cf(grid_mapping_var, errcheck=errcheck)
 
     def get_lonlats(self, chunks=None):
         """Return longitude and latitude arrays.
