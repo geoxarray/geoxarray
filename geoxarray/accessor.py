@@ -274,7 +274,7 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
             return None
         elif self._crs is not None:
             return self._crs
-        applied_crs = set(self._set_crs_objects().values())
+        applied_crs = {crs for crs in self._set_crs_objects().values() if crs is not None}
         num_crs = len(applied_crs)
         if num_crs == 1:
             self._crs = applied_crs.pop()
@@ -282,7 +282,8 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
         elif num_crs >= 1:
             raise RuntimeError("Dataset has more than one CRS")
         else:
-            raise RuntimeError("No CRS information found in Dataset")
+            self._crs = False
+            return None
 
 
 @xr.register_dataarray_accessor("geo")

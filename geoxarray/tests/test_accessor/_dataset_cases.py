@@ -20,53 +20,51 @@ from dask import array as da
 from ._shared import OTHER_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
 
 
-def cf_1gm_geos_y_x():
+def cf_1gm_geos_y_x(y_coord="y", x_coord="x", other=None):
+    rad_size = (Y_DIM_SIZE, X_DIM_SIZE)
+    rad_dims = (y_coord, x_coord)
+    if other:
+        rad_size = (OTHER_DIM_SIZE,) + rad_size
+        rad_dims = ("other",) + rad_dims
     return xr.Dataset(
         {
             "Rad": xr.DataArray(
-                da.zeros((Y_DIM_SIZE, X_DIM_SIZE)),
-                dims=("y", "x"),
+                da.zeros(rad_size),
+                dims=rad_dims,
                 attrs={"grid_mapping": "goes_imager_projection"},
             )
         },
         coords={
-            "y": xr.DataArray(
+            y_coord: xr.DataArray(
                 da.linspace(0.1265, 0.04257, Y_DIM_SIZE),
-                dims=("y",),
+                dims=(y_coord,),
                 attrs={"units": "rad"},
             ),
-            "x": xr.DataArray(
+            x_coord: xr.DataArray(
                 da.linspace(-0.07503, 0.06495, X_DIM_SIZE),
-                dims=("x",),
-                attrs={"units": "rad"},
-            ),
-            "t": np.array("2017-09-02T18:03:34", dtype=np.datetime64),
-            "band_id": xr.DataArray(np.array([1], dtype=np.uint8), dims=("band",), attrs={"units": "1"}),
-        },
-    )
-
-
-def cf_1gm_geos_b_a():
-    return xr.Dataset(
-        {
-            "Rad": xr.DataArray(
-                da.zeros((OTHER_DIM_SIZE, Y_DIM_SIZE, X_DIM_SIZE)),
-                dims=("other", "b", "a"),
-                attrs={"grid_mapping": "goes_imager_projection"},
-            )
-        },
-        coords={
-            "b": xr.DataArray(
-                da.linspace(0.1265, 0.04257, Y_DIM_SIZE),
-                dims=("b",),
-                attrs={"units": "rad"},
-            ),
-            "a": xr.DataArray(
-                da.linspace(-0.07503, 0.06495, X_DIM_SIZE),
-                dims=("a",),
+                dims=(x_coord,),
                 attrs={"units": "rad"},
             ),
             "t": np.array("2017-09-02T18:03:34", dtype="datetime64[ns]"),
             "band_id": xr.DataArray(np.array([1], dtype=np.uint8), dims=("band",), attrs={"units": "1"}),
         },
     )
+
+
+def cf_1gm_geos_other_b_a():
+    return cf_1gm_geos_y_x("b", "a", other="other")
+
+
+def cf_0gm_no_coords():
+    return xr.Dataset(
+        {
+            "Rad": xr.DataArray(
+                da.zeros((Y_DIM_SIZE, X_DIM_SIZE)),
+                dims=("y", "x"),
+            ),
+        }
+    )
+
+
+# TODO: Add case of multiple variables (3?) and 1 shared grid mapping
+# TODO: Add case of multiple variable (3?) with different grid mappings

@@ -14,11 +14,11 @@
 # limitations under the License.
 """Tests for the xarray Dataset-specific accessor."""
 
-from ._dataset_cases import cf_1gm_geos_b_a
+from ._dataset_cases import cf_0gm_no_coords, cf_1gm_geos_other_b_a
 
 
 def test_set_dims_modifies_data_arrs():
-    ds = cf_1gm_geos_b_a()
+    ds = cf_1gm_geos_other_b_a()
 
     # the dims are unchanged if we only use the DataArray
     assert ds["Rad"].geo.dims != ("other", "y", "x")
@@ -41,3 +41,20 @@ def test_set_dims_modifies_data_arrs():
     assert ds["Rad"].geo.dims == ("other", "b", "a")
     # the underlying DataArrays all have renamed dimensions
     assert new_ds2["Rad"].geo.dims == ("other", "y", "x")
+
+
+def test_crs_no_crs():
+    ds = cf_0gm_no_coords()
+    assert ds.geo.crs is None
+
+
+# def test_crs_write_crs():
+#     ds = cf_0gm_no_coords()
+#     new_crs = CRS.from_epsg(4326)
+#     crs_wkt = new_crs.to_wkt()
+#     inplace = True
+#     gmap_var_name = None
+#
+#     assert ds.geo.crs is None
+#     new_ds = ds.geo.write_crs(new_crs, grid_mapping_name=gmap_var_name, inplace=inplace)
+#     assert new_ds is ds if inplace else new_ds is not ds
