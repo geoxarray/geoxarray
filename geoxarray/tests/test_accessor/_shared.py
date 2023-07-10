@@ -18,6 +18,8 @@ from __future__ import annotations
 import xarray as xr
 from pyproj import CRS
 
+from geoxarray.accessor import DEFAULT_GRID_MAPPING_VARIABLE_NAME
+
 X_DIM_SIZE = 20
 Y_DIM_SIZE = 10
 ALT_DIM_SIZE = 5
@@ -25,14 +27,14 @@ OTHER_DIM_SIZE = 3
 TIME_DIM_SIZE = 100
 
 
-def check_written_crs(xr_obj: xr.DataArray | xr.Dataset, exp_crs: CRS, gmap_var_name: str) -> None:
+def check_written_crs(xr_obj: xr.DataArray | xr.Dataset, exp_crs: CRS, gmap_var_name: str | None) -> None:
     """Check that CRS and grid mapping information was written properly to the xarray object."""
     exp_cf_params = exp_crs.to_cf()
 
     assert xr_obj.geo.crs == exp_crs
-    gmap_var = xr_obj.coords[gmap_var_name or "spatial_ref"]
+    gmap_var = xr_obj.coords[gmap_var_name or DEFAULT_GRID_MAPPING_VARIABLE_NAME]
     assert set(exp_cf_params.items()).issubset(set(gmap_var.attrs.items()))
     assert gmap_var.attrs["crs_wkt"] == exp_crs.to_wkt()
     assert gmap_var.attrs["spatial_ref"] == exp_crs.to_wkt()
-    assert xr_obj.encoding["grid_mapping"] == gmap_var_name or "spatial_ref"
+    assert xr_obj.encoding["grid_mapping"] == gmap_var_name or DEFAULT_GRID_MAPPING_VARIABLE_NAME
     assert "grid_mapping" not in xr_obj.attrs

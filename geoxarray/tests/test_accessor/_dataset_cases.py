@@ -35,7 +35,12 @@ def cf_1gm_geos_y_x(y_coord: str = "y", x_coord: str = "x", other: str | None = 
                 da.zeros(rad_size),
                 dims=rad_dims,
                 attrs={"grid_mapping": "goes_imager_projection"},
-            )
+            ),
+            "different_spatial": xr.DataArray(
+                da.zeros((Y_DIM_SIZE, X_DIM_SIZE)),
+                dims=(f"not_{y_coord}", f"not_{x_coord}"),
+            ),
+            "scalar_var": xr.DataArray(0.0),
         },
         coords={
             y_coord: xr.DataArray(
@@ -66,6 +71,11 @@ def cf_0gm_no_coords() -> xr.Dataset:
                 da.zeros((Y_DIM_SIZE, X_DIM_SIZE)),
                 dims=("y", "x"),
             ),
+            "different_spatial": xr.DataArray(
+                da.zeros((Y_DIM_SIZE, X_DIM_SIZE)),
+                dims=("not_y", "not_x"),
+            ),
+            "scalar_var": xr.DataArray(0.0),
         }
     )
 

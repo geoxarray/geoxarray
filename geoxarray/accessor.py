@@ -308,9 +308,10 @@ def _assign_grid_mapping(xr_obj: xr.DataArray | xr.Dataset, grid_mapping_var_nam
 
     if hasattr(xr_obj, "data_vars"):
         for var_name in xr_obj.data_vars:
-            # TODO: Check for some kind of spatial dimensions
             data_arr = xr_obj[var_name]
-            if not data_arr.dims:
+            dims = data_arr.geo.dims
+            if not dims or all(dim_name not in dims for dim_name in ("x", "y", "z")):
+                # no spatial dimensions
                 continue
             _assign_grid_mapping(data_arr, grid_mapping_var_name)
 
@@ -331,20 +332,23 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
 
         Parameters
         ----------
-        x : str or None
+        x:
             Name of the X dimension. This dimension usually exists with
             a corresponding coordinate variable in meters for
             gridded/projected data.
-        y : str or None
+        y:
             Name of the Y dimension. Similar to the X dimension but on the Y
             axis.
-        vertical : str or None
+        vertical:
             Name of the vertical or Z dimension. This dimension usually exists
             with a corresponding coordinate variable in meters for altitude
             or pressure level (ex. hPa, millibar, etc).
-        time : str or None
+        time:
             Name of the time dimension. This dimension usually exists with a
             corresponding coordinate variable with time objects.
+        inplace:
+            If True, changes are made to the current xarray object. Otherwise,
+            a copy of the object is made first. Default is False.
 
         """
         all_dims = {
@@ -385,9 +389,9 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
 class GeoDataArrayAccessor(_SharedGeoAccessor):
     """Provide DataArray geolocation helper functions from a `.geo` accessor."""
 
-    def __init__(self, data_arr_obj):
+    def __init__(self, data_arr_obj: xr.DataArray) -> None:
         """Initialize a 'best guess' dimension mapping to preferred dimension names."""
-        self._is_gridded = None
+        self._is_gridded: bool | None = None
         super().__init__(data_arr_obj)
 
     def _get_obj(self, inplace):

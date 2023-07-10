@@ -17,6 +17,7 @@ import pytest
 import xarray as xr
 from pyproj import CRS
 
+from ...accessor import DEFAULT_GRID_MAPPING_VARIABLE_NAME
 from ._data_array_cases import cf_grid_mapping_geos_no_wkt
 from ._dataset_cases import (
     cf_0gm_no_coords,
@@ -93,6 +94,13 @@ def test_crs_write_crs(inplace, gmap_var_name):
     check_written_crs(new_ds, new_crs, gmap_var_name)
     # storing the CRS in the Dataset should have updated encoding information in the spatial DataArrays
     check_written_crs(new_ds["Rad"], new_crs, gmap_var_name)
+    check_written_crs(new_ds["different_spatial"], new_crs, gmap_var_name)
+    exp_gmap_var = gmap_var_name or DEFAULT_GRID_MAPPING_VARIABLE_NAME
+    for nonspatial_var in ("scalar_var",):
+        assert exp_gmap_var not in new_ds[nonspatial_var].attrs
+        assert exp_gmap_var not in new_ds[nonspatial_var].encoding
+        # coordinates are shared between a Dataset's DataArrays (this check won't pass)
+        # assert exp_gmap_var not in new_ds[nonspatial_var].coords
 
 
 def test_netcdf_grid_mapping_round_trip(tmp_path):
