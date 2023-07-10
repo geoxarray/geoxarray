@@ -32,9 +32,16 @@ from ._data_array_cases import (
     misc_y_x_z,
     misc_z_y_x,
     no_crs_no_dims_2d,
+    pyr_geos_area_2d,
     raw_coords_lats1d_lons1d,
 )
-from ._shared import ALT_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE, check_written_crs
+from ._shared import (
+    ALT_DIM_SIZE,
+    X_DIM_SIZE,
+    Y_DIM_SIZE,
+    AreaDefinition,
+    check_written_crs,
+)
 
 
 @pytest.mark.parametrize(
@@ -102,3 +109,9 @@ def test_no_crs_write_crs(inplace, gmap_var_name):
 
     assert new_data_arr is data_arr if inplace else new_data_arr is not data_arr
     check_written_crs(new_data_arr, new_crs, gmap_var_name)
+
+
+@pytest.mark.skipif(AreaDefinition is None, reason="Missing 'pyresample' dependency")
+def test_pyresample_area_2d_crs():
+    data_arr = pyr_geos_area_2d()
+    assert data_arr.geo.crs == data_arr.attrs["area"].crs

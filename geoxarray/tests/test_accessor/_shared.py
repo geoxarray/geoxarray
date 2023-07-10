@@ -20,6 +20,12 @@ from pyproj import CRS
 
 from geoxarray.accessor import DEFAULT_GRID_MAPPING_VARIABLE_NAME
 
+try:
+    from pyresample import AreaDefinition
+except ImportError:
+    AreaDefinition = None
+
+
 X_DIM_SIZE = 20
 Y_DIM_SIZE = 10
 ALT_DIM_SIZE = 5
