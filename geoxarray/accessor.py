@@ -45,7 +45,7 @@ to other formats (CF compatible NetCDF file).
 from __future__ import annotations
 
 import warnings
-from typing import Any, Literal
+from typing import Any, Literal, TypeVar
 
 import xarray as xr
 from pyproj import CRS
@@ -70,12 +70,13 @@ except ImportError:
 
 
 DEFAULT_GRID_MAPPING_VARIABLE_NAME = "spatial_ref"
+XarrayObject = TypeVar("XarrayObject", xr.DataArray, xr.Dataset)
 
 
 class _SharedGeoAccessor:
     """Accessor functionality shared between Dataset and DataArray objects."""
 
-    def __init__(self, xarray_obj: xr.DataArray | xr.Dataset) -> None:
+    def __init__(self, xarray_obj: XarrayObject) -> None:
         """Set handle for xarray object."""
         self._obj = xarray_obj
         self._crs: CRS | Literal[False] | None = None
@@ -85,7 +86,7 @@ class _SharedGeoAccessor:
         self._time_dim = None
         self._dim_map = False
 
-    def _get_obj(self, inplace: bool) -> xr.DataArray | xr.Dataset:
+    def _get_obj(self, inplace: bool) -> XarrayObject:
         """Get the object to modify.
 
         Parameters
@@ -223,7 +224,7 @@ class _SharedGeoAccessor:
             return area.crs
         return None
 
-    def write_crs(self, new_crs_info: Any, grid_mapping_name: str | None = None, inplace: bool = False) -> xr.DataArray:
+    def write_crs(self, new_crs_info: Any, grid_mapping_name: str | None = None, inplace: bool = False) -> XarrayObject:
         """Write the CRS to the xarray object in a CF compliant manner.
 
         .. note::
