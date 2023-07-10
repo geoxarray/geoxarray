@@ -222,7 +222,7 @@ class _SharedGeoAccessor:
     def write_crs(self, new_crs_info: Any, grid_mapping_name: str | None = None, inplace: bool = False) -> xr.DataArray:
         """Write the CRS to the xarray object in a CF compliant manner.
 
-        .. disclaimer::
+        .. note::
 
             Much of this code is copied from the rioxarray project and is under the Apache 2.0 license.
             A copy of this license is available in the source file ``LICENSE_rioxarray``.
@@ -266,7 +266,7 @@ class _SharedGeoAccessor:
     def grid_mapping(self) -> str | None:
         """Name of a grid mapping variable associated with this DataArray.
 
-        .. disclaimer::
+        .. note::
 
             Much of this code is copied from the rioxarray project and is under the Apache 2.0 license.
             A copy of this license is available in the source file ``LICENSE_rioxarray``.
