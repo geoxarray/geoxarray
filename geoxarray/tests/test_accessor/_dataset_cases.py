@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Test cases for Dataset-specific interfaces."""
+from __future__ import annotations
+
 import numpy as np
 import xarray as xr
 from dask import array as da
@@ -21,12 +23,12 @@ from ._data_array_cases import cf_grid_mapping_geos_no_wkt
 from ._shared import OTHER_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
 
 
-def cf_1gm_geos_y_x(y_coord="y", x_coord="x", other=None):
-    rad_size = (Y_DIM_SIZE, X_DIM_SIZE)
-    rad_dims = (y_coord, x_coord)
+def cf_1gm_geos_y_x(y_coord: str = "y", x_coord: str = "x", other: str | None = None) -> xr.Dataset:
+    rad_size: tuple[int, ...] = (Y_DIM_SIZE, X_DIM_SIZE)
+    rad_dims: tuple[str, ...] = (y_coord, x_coord)
     if other:
         rad_size = (OTHER_DIM_SIZE,) + rad_size
-        rad_dims = ("other",) + rad_dims
+        rad_dims = (other,) + rad_dims
     return xr.Dataset(
         {
             "Rad": xr.DataArray(
@@ -53,11 +55,11 @@ def cf_1gm_geos_y_x(y_coord="y", x_coord="x", other=None):
     )
 
 
-def cf_1gm_geos_other_b_a():
+def cf_1gm_geos_other_b_a() -> xr.Dataset:
     return cf_1gm_geos_y_x("b", "a", other="other")
 
 
-def cf_0gm_no_coords():
+def cf_0gm_no_coords() -> xr.Dataset:
     return xr.Dataset(
         {
             "Rad": xr.DataArray(
@@ -68,7 +70,7 @@ def cf_0gm_no_coords():
     )
 
 
-def cf_3gm_geos_y_x():
+def cf_3gm_geos_y_x() -> xr.Dataset:
     ds = cf_1gm_geos_y_x()
     ds["Rad2"] = ds["Rad"].copy()
     ds["Rad3"] = ds["Rad"].copy()
@@ -86,4 +88,8 @@ def cf_3gm_geos_y_x():
     return ds
 
 
-# TODO: Add case of multiple variables (3?) and 1 shared grid mapping
+def cf_3vars_1gm_geos_y_x() -> xr.Dataset:
+    ds = cf_1gm_geos_y_x()
+    ds["Rad2"] = ds["Rad"].copy()
+    ds["Rad3"] = ds["Rad"].copy()
+    return ds

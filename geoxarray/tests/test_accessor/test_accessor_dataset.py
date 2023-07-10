@@ -22,6 +22,7 @@ from ._dataset_cases import (
     cf_1gm_geos_other_b_a,
     cf_1gm_geos_y_x,
     cf_3gm_geos_y_x,
+    cf_3vars_1gm_geos_y_x,
 )
 from ._shared import check_written_crs
 
@@ -57,8 +58,9 @@ def test_crs_no_crs():
     assert ds.geo.crs is None
 
 
-def test_grid_mapping_single_crs_coord():
-    ds = cf_1gm_geos_y_x()
+@pytest.mark.parametrize("data_func", [cf_1gm_geos_y_x, cf_3vars_1gm_geos_y_x])
+def test_grid_mapping_single_crs_coord(data_func):
+    ds = data_func()
     assert ds.geo.grid_mapping == "goes_imager_projection"
 
 
@@ -70,7 +72,7 @@ def test_crs_single_crs_coord():
 def test_crs_three_crs_coord():
     ds = cf_3gm_geos_y_x()
     with pytest.raises(RuntimeError):
-        ds.geo.crs
+        _ = ds.geo.crs
 
 
 @pytest.mark.parametrize("inplace", [False, True])
