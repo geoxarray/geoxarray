@@ -75,7 +75,7 @@ DEFAULT_GRID_MAPPING_VARIABLE_NAME = "spatial_ref"
 class _SharedGeoAccessor:
     """Accessor functionality shared between Dataset and DataArray objects."""
 
-    def __init__(self, xarray_obj):
+    def __init__(self, xarray_obj: xr.DataArray | xr.Dataset) -> None:
         """Set handle for xarray object."""
         self._obj = xarray_obj
         self._crs: CRS | Literal[False] | None = None
@@ -85,12 +85,12 @@ class _SharedGeoAccessor:
         self._time_dim = None
         self._dim_map = False
 
-    def _get_obj(self, inplace):
+    def _get_obj(self, inplace: bool) -> xr.DataArray | xr.Dataset:
         """Get the object to modify.
 
         Parameters
         ----------
-        inplace: bool
+        inplace
             If True, returns self.
 
         Returns
@@ -128,6 +128,10 @@ class _SharedGeoAccessor:
                 self._dim_map[self._time_dim] = "time"
 
         return self._dim_map
+
+    def set_dims(self, *args, **kwargs) -> None:
+        """Tell geoxarray the names of the provided dimensions in this Xarray object."""
+        raise NotImplementedError()
 
     @property
     def dims(self):
@@ -299,18 +303,6 @@ class _SharedGeoAccessor:
 
 def _get_encoding_or_attr(xr_obj: xr.Dataset | xr.DataArray, attr_name: str) -> Any:
     return xr_obj.encoding.get(attr_name, xr_obj.attrs.get(attr_name))
-
-
-# def _has_spatial_dims(xr_obj: xr.Dataset | xr.DataArray, var_name: Any | Hashable) -> bool:
-#     with suppress(RuntimeError, KeyError):
-#         return bool(_get_spatial_dims(xr_obj, var_name))
-#     return False
-#
-#
-# def _get_spatial_dims(xr_obj: xr.Dataset | xr.DataArray, var_name: Any | Hashable) -> tuple[str, str]:
-#     dim_map = xr_obj[var_name].geo.dim_map
-#     rev_dim_map = {v: k for k, v in dim_map.items()}
-#     return rev_dim_map["x"], rev_dim_map["y"]
 
 
 @xr.register_dataset_accessor("geo")

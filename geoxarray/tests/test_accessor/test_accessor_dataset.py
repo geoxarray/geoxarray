@@ -17,7 +17,13 @@ import pytest
 from pyproj import CRS
 
 from ._data_array_cases import cf_grid_mapping_geos_no_wkt
-from ._dataset_cases import cf_0gm_no_coords, cf_1gm_geos_other_b_a, cf_1gm_geos_y_x
+from ._dataset_cases import (
+    cf_0gm_no_coords,
+    cf_1gm_geos_other_b_a,
+    cf_1gm_geos_y_x,
+    cf_3gm_geos_y_x,
+)
+from ._shared import check_written_crs
 
 
 def test_set_dims_modifies_data_arrs():
@@ -61,20 +67,19 @@ def test_crs_single_crs_coord():
     assert ds.geo.crs == CRS.from_cf(cf_grid_mapping_geos_no_wkt().attrs)
 
 
+def test_crs_three_crs_coord():
+    ds = cf_3gm_geos_y_x()
+    with pytest.raises(RuntimeError):
+        ds.geo.crs
+
+
 @pytest.mark.parametrize("inplace", [False, True])
 @pytest.mark.parametrize("gmap_var_name", [None, "my_gm"])
 def test_crs_write_crs(inplace, gmap_var_name):
     ds = cf_0gm_no_coords()
     new_crs = CRS.from_epsg(4326)
-    exp_cf_params = new_crs.to_cf()
 
     assert ds.geo.crs is None
     new_ds = ds.geo.write_crs(new_crs, grid_mapping_name=gmap_var_name, inplace=inplace)
     assert new_ds is ds if inplace else new_ds is not ds
-    assert new_ds.geo.crs == new_crs
-    gmap_var = new_ds.coords[gmap_var_name or "spatial_ref"]
-    assert set(exp_cf_params.items()).issubset(set(gmap_var.attrs.items()))
-    assert gmap_var.attrs["crs_wkt"] == new_crs.to_wkt()
-    assert gmap_var.attrs["spatial_ref"] == new_crs.to_wkt()
-    assert new_ds.encoding["grid_mapping"] == gmap_var_name or "spatial_ref"
-    assert "grid_mapping" not in new_ds.attrs
+    check_written_crs(new_ds, new_crs, gmap_var_name)

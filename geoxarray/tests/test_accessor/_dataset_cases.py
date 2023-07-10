@@ -68,5 +68,22 @@ def cf_0gm_no_coords():
     )
 
 
+def cf_3gm_geos_y_x():
+    ds = cf_1gm_geos_y_x()
+    ds["Rad2"] = ds["Rad"].copy()
+    ds["Rad3"] = ds["Rad"].copy()
+
+    gm2 = cf_grid_mapping_geos_no_wkt()
+    gm2["longitude_of_projection_origin"] = -95.5
+    ds.coords["goes_imager_projection2"] = gm2
+    ds["Rad2"].attrs["grid_mapping"] = "goes_imager_projection2"
+
+    gm3 = cf_grid_mapping_geos_no_wkt()
+    gm3["longitude_of_projection_origin"] = -105.5
+    ds.coords["goes_imager_projection3"] = gm3
+    ds["Rad3"].attrs["grid_mapping"] = "goes_imager_projection3"
+
+    return ds
+
+
 # TODO: Add case of multiple variables (3?) and 1 shared grid mapping
-# TODO: Add case of multiple variable (3?) with different grid mappings
