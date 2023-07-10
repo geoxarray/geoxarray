@@ -42,12 +42,6 @@ def geotiff_b_a():
     )
 
 
-ALL_GEOTIFF_2D_CASES = [
-    geotiff_y_x,
-    geotiff_b_a,
-]
-
-
 def geotiff_bands_y_x():
     return xr.DataArray(
         da.empty((OTHER_DIM_SIZE, Y_DIM_SIZE, X_DIM_SIZE)),
@@ -101,11 +95,6 @@ def raw_coords_lats1d_lons1d():
     )
 
 
-ALL_RAW_2D_CASES = [
-    raw_coords_lats1d_lons1d,
-]
-
-
 def cf_y_x():
     return xr.DataArray(
         da.empty((Y_DIM_SIZE, X_DIM_SIZE)),
@@ -152,40 +141,5 @@ def cf_y_x_with_bad_crs():
     return data_arr
 
 
-ALL_CF_2D_CASES = [
-    cf_y_x,
-]
-
-
-def gx_y_x():
-    crs = CRS.from_epsg(4326)
-    return xr.DataArray(
-        da.empty((Y_DIM_SIZE, X_DIM_SIZE)),
-        dims=("y", "x"),
-        attrs={
-            "grid_mapping": "spatial_ref",
-        },
-        coords={
-            "spatial_ref": xr.DataArray(
-                0,
-                attrs={
-                    "crs_wkt": crs.to_wkt(),
-                    "spatial_ref": crs.to_wkt(),
-                },
-            ),
-            "y": da.linspace(0, 15000, X_DIM_SIZE),
-            "x": da.linspace(-15000, 10000, Y_DIM_SIZE),
-        },
-    )
-
-
-ALL_GX_2D_CASES = [
-    gx_y_x,
-]
-
-
 def no_crs_no_dims_2d():
     return xr.DataArray(da.empty((Y_DIM_SIZE, X_DIM_SIZE)))
-
-
-ALL_DATA_ARRAY_2D_CASES = ALL_GEOTIFF_2D_CASES + ALL_RAW_2D_CASES + ALL_CF_2D_CASES
