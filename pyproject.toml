@@ -46,4 +46,4 @@ warn_unreachable = true
 warn_unused_configs = true
 
 [tool.pytest.ini_options]
-filterwarnings = ["error"]
+filterwarnings = ["error", "ignore:numpy.ndarray size changed:RuntimeWarning"]

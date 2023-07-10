@@ -14,6 +14,7 @@
 # limitations under the License.
 """Tests for the xarray Dataset-specific accessor."""
 import pytest
+import xarray as xr
 from pyproj import CRS
 
 from ._data_array_cases import cf_grid_mapping_geos_no_wkt
@@ -83,5 +84,29 @@ def test_crs_write_crs(inplace, gmap_var_name):
 
     assert ds.geo.crs is None
     new_ds = ds.geo.write_crs(new_crs, grid_mapping_name=gmap_var_name, inplace=inplace)
+    if inplace:
+        assert new_ds is ds
+    else:
+        assert new_ds is not ds
+        assert ds.geo.crs is None
     assert new_ds is ds if inplace else new_ds is not ds
     check_written_crs(new_ds, new_crs, gmap_var_name)
+    # storing the CRS in the Dataset should have updated encoding information in the spatial DataArrays
+    check_written_crs(new_ds["Rad"], new_crs, gmap_var_name)
+
+
+def test_netcdf_grid_mapping_round_trip(tmp_path):
+    ds = cf_0gm_no_coords()
+    new_crs = CRS.from_epsg(4326)
+
+    assert ds.geo.crs is None
+    new_ds = ds.geo.write_crs(new_crs, inplace=False)
+    assert new_ds.geo.crs == new_crs
+    nc_out = tmp_path / "test.nc"
+    new_ds.to_netcdf(nc_out)
+
+    assert nc_out.is_file()
+    nc_ds = xr.open_dataset(nc_out, decode_coords="all")
+    assert nc_ds.geo.crs == new_crs
+    assert nc_ds["Rad"].geo.crs == new_crs
+    assert "spatial_ref" in nc_ds.coords

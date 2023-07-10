@@ -261,9 +261,7 @@ class _SharedGeoAccessor:
 
         obj.coords[grid_mapping_var_name] = xr.Variable((), 0)
         obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
-
-        obj.attrs.pop("grid_mapping", None)
-        obj.encoding["grid_mapping"] = grid_mapping_var_name
+        _assign_grid_mapping(obj, grid_mapping_var_name)
         return obj
 
     @property
@@ -284,7 +282,6 @@ class _SharedGeoAccessor:
         gm_var_name = self._obj.encoding.get("grid_mapping") or self._obj.attrs.get("grid_mapping")
         if gm_var_name is not None:
             return gm_var_name
-        # TODO: Support other grid mapping variable names
         if hasattr(self._obj, "data_vars"):
             var_grid_mappings = set(self._all_grid_mapping_names())
             if len(var_grid_mappings) > 1:
@@ -303,6 +300,19 @@ class _SharedGeoAccessor:
 
 def _get_encoding_or_attr(xr_obj: xr.Dataset | xr.DataArray, attr_name: str) -> Any:
     return xr_obj.encoding.get(attr_name, xr_obj.attrs.get(attr_name))
+
+
+def _assign_grid_mapping(xr_obj: xr.DataArray | xr.Dataset, grid_mapping_var_name: str) -> None:
+    xr_obj.attrs.pop("grid_mapping", None)
+    xr_obj.encoding["grid_mapping"] = grid_mapping_var_name
+
+    if hasattr(xr_obj, "data_vars"):
+        for var_name in xr_obj.data_vars:
+            # TODO: Check for some kind of spatial dimensions
+            data_arr = xr_obj[var_name]
+            if not data_arr.dims:
+                continue
+            _assign_grid_mapping(data_arr, grid_mapping_var_name)
 
 
 @xr.register_dataset_accessor("geo")
