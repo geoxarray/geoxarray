@@ -40,13 +40,6 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     python_requires=">=3.9",
-    package_data={
-        "geoxarray": [
-            # When adding files here, remember to update MANIFEST.in as well,
-            # or else they will not be included in the distribution on PyPI!
-            # 'path/to/data_file',
-        ]
-    },
     install_requires=requirements,
     extras_require=extras_require,
     tests_require=["pytest", "dask", "pyresample"],

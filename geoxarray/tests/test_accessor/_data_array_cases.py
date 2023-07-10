@@ -13,11 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Test cases for DataArray-specific interfaces."""
+from __future__ import annotations
+
 import xarray as xr
 from dask import array as da
 from pyproj import CRS
 
-from ._shared import ALT_DIM_SIZE, OTHER_DIM_SIZE, TIME_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
+from ._shared import (
+    ALT_DIM_SIZE,
+    OTHER_DIM_SIZE,
+    TIME_DIM_SIZE,
+    X_DIM_SIZE,
+    Y_DIM_SIZE,
+    AreaDefinition,
+)
 
 
 def geotiff_y_x():
@@ -143,3 +152,22 @@ def cf_y_x_with_bad_crs():
 
 def no_crs_no_dims_2d():
     return xr.DataArray(da.empty((Y_DIM_SIZE, X_DIM_SIZE)))
+
+
+def pyr_geos_area_2d() -> xr.DataArray:
+    geos_crs = CRS.from_dict(
+        {
+            "proj": "geos",
+            "sweep": "x",
+            "lon_0": -75,
+            "h": 35786023,
+            "ellps": "GRS80",
+            "no_defs": None,
+        }
+    )
+    area = AreaDefinition(
+        "", "", "", geos_crs, 200, 100, (-5434894.885056, -5434894.885056, 5434894.885056, 5434894.885056)
+    )
+    data_arr = no_crs_no_dims_2d()
+    data_arr.attrs["area"] = area
+    return data_arr

@@ -212,15 +212,10 @@ class _SharedGeoAccessor:
             return None
 
     def _get_crs_from_pyresample(self):
-        if has_pyresample is None:
-            return None
         area = self._obj.attrs.get("area")
         if area is None:
             return None
-        if isinstance(area, AreaDefinition):
-            return area.crs
-        if isinstance(area, SwathDefinition):
-            # TODO: Set whether or not things are gridded?
+        if hasattr(area, "crs"):
             return area.crs
         return None
 
