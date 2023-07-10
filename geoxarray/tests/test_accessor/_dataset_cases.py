@@ -17,6 +17,7 @@ import numpy as np
 import xarray as xr
 from dask import array as da
 
+from ._data_array_cases import cf_grid_mapping_geos_no_wkt
 from ._shared import OTHER_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
 
 
@@ -47,6 +48,7 @@ def cf_1gm_geos_y_x(y_coord="y", x_coord="x", other=None):
             ),
             "t": np.array("2017-09-02T18:03:34", dtype="datetime64[ns]"),
             "band_id": xr.DataArray(np.array([1], dtype=np.uint8), dims=("band",), attrs={"units": "1"}),
+            "goes_imager_projection": cf_grid_mapping_geos_no_wkt(),
         },
     )
 

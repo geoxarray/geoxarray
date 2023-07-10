@@ -118,7 +118,12 @@ def cf_y_x():
 
 def cf_y_x_with_crs_coord():
     data_arr = cf_y_x()
-    data_arr.coords["a_grid_map_var"] = xr.DataArray(
+    data_arr.coords["a_grid_map_var"] = cf_grid_mapping_geos_no_wkt()
+    return data_arr
+
+
+def cf_grid_mapping_geos_no_wkt():
+    return xr.DataArray(
         -1,
         attrs={
             "long_name": "GOES-R ABI fixed grid projection",
@@ -132,7 +137,6 @@ def cf_y_x_with_crs_coord():
             "sweep_angle_axis": "x",
         },
     )
-    return data_arr
 
 
 def cf_y_x_with_crs_wkt_coord():
