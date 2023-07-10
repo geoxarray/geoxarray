@@ -48,8 +48,8 @@ In the future geoxarray will also be available on conda-forge.
 Dependencies
 ------------
 
-Besides the xarray dependency, the ``geoxarray`` uses CRS objects
-from the `pyproj <https://pyproj4.github.io/pyproj/stable/>`_ library
+Besides the xarray dependency, the ``geoxarray`` package uses CRS objects
+from the `pyproj <https://pyproj4.github.io/pyproj/stable/>`_ library.
 Additionally, geoxarray has a lot of optional dependencies when it comes
 to converting to other libraries' CRS or geolocation objects. These
 libraries include, but may not be limited to:
@@ -57,6 +57,18 @@ libraries include, but may not be limited to:
 - rasterio
 - cartopy
 - pyresample
+
+Relationship with rioxarray
+---------------------------
+
+At the time of writing, rioxarray is an independent project whose features
+related to CRS and dimension handling are very similar if not exactly the
+same as geoxarray. Rioxarray existed first and paved the way to show how CRS
+information can be handled in an xarray-friendly way. Much of geoxarray is
+inspired by rioxarray, if not copied directly. Portions of code copied from
+rioxarray are noted in docstrings for that code and are under the Apache
+License of rioxarray which has been copied as ``LICENSE_rioxarray`` in the
+geoxarray package and repository.
 
 Development Status
 ------------------

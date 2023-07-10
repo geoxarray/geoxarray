@@ -15,9 +15,13 @@
 """Tests for the xarray DataArray-specific accessor."""
 
 import pytest
+from pyproj import CRS
 
 from ._data_array_cases import (
     cf_y_x,
+    cf_y_x_with_bad_crs,
+    cf_y_x_with_crs_coord,
+    cf_y_x_with_crs_wkt_coord,
     geotiff_b_a,
     geotiff_bands_y_x,
     geotiff_x_y,
@@ -27,9 +31,10 @@ from ._data_array_cases import (
     misc_time_z_y_x,
     misc_y_x_z,
     misc_z_y_x,
+    no_crs_no_dims_2d,
     raw_coords_lats1d_lons1d,
 )
-from ._shared import ALT_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
+from ._shared import ALT_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE, check_written_crs
 
 
 @pytest.mark.parametrize(
@@ -55,3 +60,45 @@ def test_default_dim_decisions(get_data_array, exp_dims):
     assert data_arr.geo.sizes["x"] == X_DIM_SIZE
     if "vertical" in exp_dims:
         assert data_arr.geo.sizes["vertical"] == ALT_DIM_SIZE
+
+
+def test_crs_no_crs():
+    data_arr = no_crs_no_dims_2d()
+    assert data_arr.geo._crs is None  # assert we haven't checked CRS info yet
+    assert data_arr.geo.crs is None
+    assert data_arr.geo._crs is False  # assert "cached" CRS findings
+    assert data_arr.geo.crs is None
+
+
+def test_crs_missing_grid_mapping():
+    data_arr = cf_y_x()
+    assert data_arr.geo._crs is None  # assert we haven't checked CRS info yet
+    with pytest.warns(UserWarning, match=r"'grid_mapping' attribute found, but"):
+        assert data_arr.geo.crs is None
+    assert data_arr.geo._crs is False  # assert "cached" CRS findings
+    assert data_arr.geo.crs is None
+
+
+@pytest.mark.parametrize("data_func", [cf_y_x_with_crs_coord, cf_y_x_with_crs_wkt_coord])
+def test_crs_from_cf_coordinate(data_func):
+    data_arr = data_func()
+    assert isinstance(data_arr.geo.crs, CRS)
+    assert isinstance(data_arr.geo.crs, CRS)  # get cached CRS
+
+
+def test_bad_crs_from_cf_coordinate():
+    data_arr = cf_y_x_with_bad_crs()
+    assert data_arr.geo.crs is None
+
+
+@pytest.mark.parametrize("inplace", [False, True])
+@pytest.mark.parametrize("gmap_var_name", [None, "my_gm"])
+def test_no_crs_write_crs(inplace, gmap_var_name):
+    data_arr = no_crs_no_dims_2d()
+    new_crs = CRS.from_epsg(4326)
+
+    assert data_arr.geo.crs is None
+    new_data_arr = data_arr.geo.write_crs(new_crs, grid_mapping_name=gmap_var_name, inplace=inplace)
+
+    assert new_data_arr is data_arr if inplace else new_data_arr is not data_arr
+    check_written_crs(new_data_arr, new_crs, gmap_var_name)

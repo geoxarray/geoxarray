@@ -116,6 +116,42 @@ def cf_y_x():
     )
 
 
+def cf_y_x_with_crs_coord():
+    data_arr = cf_y_x()
+    data_arr.coords["a_grid_map_var"] = cf_grid_mapping_geos_no_wkt()
+    return data_arr
+
+
+def cf_grid_mapping_geos_no_wkt():
+    return xr.DataArray(
+        -1,
+        attrs={
+            "long_name": "GOES-R ABI fixed grid projection",
+            "grid_mapping_name": "geostationary",
+            "perspective_point_height": 35786023.0,
+            "semi_major_axis": 6378137.0,
+            "semi_minor_axis": 6356752.31414,
+            "inverse_flattening": 298.2572221,
+            "latitude_of_projection_origin": 0.0,
+            "longitude_of_projection_origin": -89.5,
+            "sweep_angle_axis": "x",
+        },
+    )
+
+
+def cf_y_x_with_crs_wkt_coord():
+    data_arr = cf_y_x_with_crs_coord()
+    crs = CRS.from_cf(data_arr.coords["a_grid_map_var"].attrs)
+    data_arr.coords["a_grid_map_var"].attrs["crs_wkt"] = crs.to_wkt()
+    return data_arr
+
+
+def cf_y_x_with_bad_crs():
+    data_arr = cf_y_x_with_crs_coord()
+    del data_arr.coords["a_grid_map_var"].attrs["grid_mapping_name"]
+    return data_arr
+
+
 ALL_CF_2D_CASES = [
     cf_y_x,
 ]
@@ -146,5 +182,10 @@ def gx_y_x():
 ALL_GX_2D_CASES = [
     gx_y_x,
 ]
+
+
+def no_crs_no_dims_2d():
+    return xr.DataArray(da.empty((Y_DIM_SIZE, X_DIM_SIZE)))
+
 
 ALL_DATA_ARRAY_2D_CASES = ALL_GEOTIFF_2D_CASES + ALL_RAW_2D_CASES + ALL_CF_2D_CASES

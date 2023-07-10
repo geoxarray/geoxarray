@@ -110,7 +110,7 @@ jobs:
         shell: bash -l {0}
         run: |
           python -m pip install \
-          --index-url https://pypi.anaconda.org/scipy-wheels-nightly/simple/ \
+          --index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/ \
           --trusted-host pypi.anaconda.org \
           --no-deps --pre --upgrade \
           matplotlib \
