@@ -151,9 +151,10 @@ class _SharedGeoAccessor:
     def write_dims(self) -> XarrayObject:
         """Rename object's dimensions to match geoxarray's preferred dimension names.
 
-        This uses Xarray's :meth:`xarray.DataArray.rename` or :meth:`xarray.Dataset.rename`
-        methods which always produce copies of the original object. It is not possible to
-        do this operation "inplace".
+        This is a simple wrapper around Xarray's :meth:`xarray.DataArray.rename`
+        or :meth:`xarray.Dataset.rename` methods along with ``.geo.dim_map`` to
+        rename the dimension names. These methods always produce copies of the
+        original object. It is not possible to do this operation "inplace".
 
         """
         obj_copy = self._get_obj(inplace=False)
@@ -364,7 +365,7 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
         # tell the dim_map property to produce the "as-is" dim map
         obj_copy.geo._dim_map = None
         dim_map = obj_copy.geo.dim_map
-        for data_arr in self._obj.data_vars.values():
+        for data_arr in obj_copy.data_vars.values():
             dims = {k: v for k, v in all_dims.items() if v in data_arr.dims}
             if not dims:
                 continue
@@ -429,7 +430,8 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         by best guess.
 
         This information does not rename or modify the data of the Xarray
-        object itself.
+        object itself. To easily rename the dimensions in a Geoxarray-friendly
+        manner, follow a call of this method with :meth:`write_dims`.
 
         Parameters
         ----------
