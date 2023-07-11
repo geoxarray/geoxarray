@@ -148,9 +148,15 @@ class _SharedGeoAccessor:
             sizes_dict[self.dim_map.get(dname, dname)] = size
         return self._obj.sizes.__class__(sizes_dict)
 
-    def write_dims(self, inplace: bool = False):
-        """Rename object's dimensions to match geoxarray's preferred dimension names."""
-        obj_copy = self._get_obj(inplace)
+    def write_dims(self) -> XarrayObject:
+        """Rename object's dimensions to match geoxarray's preferred dimension names.
+
+        This uses Xarray's :meth:`xarray.DataArray.rename` or :meth:`xarray.Dataset.rename`
+        methods which always produce copies of the original object. It is not possible to
+        do this operation "inplace".
+
+        """
+        obj_copy = self._get_obj(inplace=False)
         return obj_copy.rename(self.dim_map)
 
     @property
