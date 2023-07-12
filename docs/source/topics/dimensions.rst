@@ -9,7 +9,7 @@ dimension and these spatial dimensions:
   reference system (CRS) this will be in the units of the projection space;
   typically meters or degrees. As an example, in a longitude/latitude CRS this
   would likely be the longitude dimension in degrees east.
-* ``y``: The opposite 2D dimension to the ``x`` dimension in a geographic
+* ``y``: The other 2D dimension to the ``x`` dimension in a geographic
   projection space. In a longitude/latitude CRS this would likely be the
   latitude dimension in degrees north.
 * ``vertical``: The elevation, altitude, or vertical dimension. This is
@@ -20,7 +20,8 @@ dimension and these spatial dimensions:
 In well structured or common data schemes, Geoxarray can probably guess what
 these dimensions are by their name or the shape of the array being looked at
 (ex. a 2D array probably has (y, x) dimensions). Geoxarray will internally
-rename these dimensions and this can be verified by doing:
+rename these dimensions and this can be verified by accessing the dimensions
+through the Geoxarray accessor.
 
 .. code-block:: python
 
