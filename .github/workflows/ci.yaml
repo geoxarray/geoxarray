@@ -37,6 +37,7 @@ jobs:
         shell: bash -l {0}
         run: |
           cd docs; \
+          make doctest; \
           make html SPHINXOPTS="-W"
 
 #      - name: Prepare tag
