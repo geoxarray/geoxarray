@@ -226,7 +226,9 @@ class _SharedGeoAccessor:
             return area.crs
         return None
 
-    def write_crs(self, new_crs_info: Any, grid_mapping_name: str | None = None, inplace: bool = False) -> XarrayObject:
+    def write_crs(
+        self, new_crs_info: Any | None = None, grid_mapping_name: str | None = None, inplace: bool = False
+    ) -> XarrayObject:
         """Write the CRS to the xarray object in a CF compliant manner.
 
         .. note::
@@ -240,6 +242,8 @@ class _SharedGeoAccessor:
             Coordinate Reference System (CRS) information to write to the
             Xarray object. Can be a :class:`pyproj.CRS` object or anything
             understood by the :meth:`pyproj.CRS.from_user_input` method.
+            If not provided, the ``.crs`` property will be used.
+            If ``.crs`` returns ``None`` a ``RuntimeError`` is raised.
         grid_mapping_name:
             Name to use for the coordinate variable created and written by this
             method. The coordinate variable, also known as the grid mapping
@@ -251,8 +255,7 @@ class _SharedGeoAccessor:
 
         """
         obj = self._get_obj(inplace)
-        crs = CRS.from_user_input(new_crs_info)
-        obj.geo._crs = crs
+        crs = self._optional_crs_from_input(new_crs_info, obj)
         grid_mapping_var_name = self.grid_mapping if grid_mapping_name is None else grid_mapping_name
         if grid_mapping_var_name is None:
             grid_mapping_var_name = DEFAULT_GRID_MAPPING_VARIABLE_NAME
@@ -266,6 +269,16 @@ class _SharedGeoAccessor:
         obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
         _assign_grid_mapping(obj, grid_mapping_var_name)
         return obj
+
+    def _optional_crs_from_input(self, new_crs_info: Any | None, obj: XarrayObject) -> CRS:
+        if new_crs_info is None:
+            crs = self.crs
+            if crs is None:
+                raise RuntimeError("No CRS information provided or found.")
+        else:
+            crs = CRS.from_user_input(new_crs_info)
+            obj.geo._crs = crs
+        return crs
 
     @property
     def grid_mapping(self) -> str | None:
