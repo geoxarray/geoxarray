@@ -25,6 +25,9 @@ geoxarray to register it. Then accessing
 the CRS.
 
 .. contents:: Supported CRS Formats
+   :depth: 1
+   :backlinks: none
+   :local:
 
 CF Grid Mapping
 ---------------
@@ -135,3 +138,62 @@ The CRS is then constructed from the metadata in that grid mapping variable's
 ``.attrs``. If the grid mapping variable's metadata (``.attrs``) includes a
 Well-Known Text (WKT) version of the CRS (a ``crs_wkt`` or ``spatial_ref``
 attribute) then the CRS will be derived from that.
+
+Satpy and Pyresample
+--------------------
+
+The :doc:`Satpy <satpy:index>` library uses
+:doc:`Pyresample <pyresample:index>` geometry objects to define the geographic
+region of a dataset. The most common objects are
+:class:`pyresample.geometry.AreaDefinition` and
+:class:`pyresample.geometry.SwathDefinition` objects and are typically found in
+a DataArray in ``.attrs["area"]``.
+
+.. testsetup::
+
+   import xarray as xr
+   import dask.array as da
+   from pyresample import AreaDefinition
+   area = AreaDefinition("", "", "", "EPSG:3070", 10, 20,
+                         (282455.22, 223080.17, 828240.35, 766436.45))
+   satpy_data_arr = xr.DataArray(da.zeros((20, 10)),
+                           dims=("y", "x"), attrs={"area": area})
+
+.. testcode::
+
+   print(satpy_data_arr)
+
+.. testoutput::
+   :options: +SKIP
+
+   <xarray.DataArray 'zeros_like-3a0478cfb7d335c932035a68e3cac66f' (y: 20, x: 10)>
+   dask.array<zeros_like, shape=(20, 10), dtype=float64, chunksize=(20, 10), chunktype=numpy.ndarray>
+   Dimensions without coordinates: y, x
+   Attributes:
+       area:     Area ID: \nDescription: \nProjection: {'datum': 'NAD83', 'k': '...
+
+These objects have a ``.crs`` property and
+is directly returned by geoxarray if the other formats of CRS information
+(see above) are not found.
+
+.. testcode::
+
+   print(repr(satpy_data_arr.geo.crs))
+
+.. testoutput::
+   :options: +NORMALIZE_WHITESPACE
+
+   <Projected CRS: EPSG:3070>
+   Name: NAD83 / Wisconsin Transverse Mercator
+   Axis Info [cartesian]:
+   - X[east]: Easting (metre)
+   - Y[north]: Northing (metre)
+   Area of Use:
+   - name: United States (USA) - Wisconsin.
+   - bounds: (-92.89, 42.48, -86.25, 47.31)
+   Coordinate Operation:
+   - name: Wisconsin Transverse Mercator 83
+   - method: Transverse Mercator
+   Datum: North American Datum 1983
+   - Ellipsoid: GRS 1980
+   - Prime Meridian: Greenwich

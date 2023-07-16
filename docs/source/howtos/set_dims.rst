@@ -1,5 +1,5 @@
-Specify your spatial and temporal dimensions
-============================================
+Specify spatial and temporal dimensions
+=======================================
 
 Assuming you have an Xarray object that has some atypical or unusual names
 for its dimensions, we can tell geoxarray what these dimensions represent.

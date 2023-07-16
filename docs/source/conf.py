@@ -225,4 +225,6 @@ intersphinx_mapping = {
     "pyproj": ("https://pyproj4.github.io/pyproj/stable", None),
     "proj": ("https://proj.org/en/latest", None),
     "rioxarray": ("https://corteva.github.io/rioxarray/stable", None),
+    "pyresample": ("https://pyresample.readthedocs.io/en/stable", None),
+    "satpy": ("https://satpy.readthedocs.io/en/stable", None),
 }
