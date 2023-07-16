@@ -11,3 +11,4 @@ How-Tos
    :caption: Accessing Metadata
 
    set_dims
+   access_crs
