@@ -61,7 +61,7 @@ jobs:
           full_commit_message: "Deploy geoxarray.github.io website for SHA:${{ github.sha }} (Ref: ${{ github.ref }})"
 
       - name: Deploy 'latest' Website
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.GEOXARRAY_WEBSITE_TOKEN }}
