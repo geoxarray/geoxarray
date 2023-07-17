@@ -1,3 +1,29 @@
-# Version X.Y.Z
+## Version 0.1.0 (2023/07/16)
 
-We haven't had any releases yet.
+### Issues Closed
+
+* [Issue 17](https://github.com/geoxarray/geoxarray/issues/17) - Renaming 'master' to 'main'
+* [Issue 15](https://github.com/geoxarray/geoxarray/issues/15) - MNT: Stop using ci-helpers in appveyor.yml
+* [Issue 9](https://github.com/geoxarray/geoxarray/issues/9) - Design for CRS extension
+* [Issue 8](https://github.com/geoxarray/geoxarray/issues/8) - Handling of CRS objects in coordinates
+* [Issue 4](https://github.com/geoxarray/geoxarray/issues/4) - Use new proj.4 to manage projections
+* [Issue 1](https://github.com/geoxarray/geoxarray/issues/1) - Plans for geoxarray?
+
+In this release 6 issues were closed.
+
+### Pull Requests Merged
+
+#### Features added
+
+* [PR 32](https://github.com/geoxarray/geoxarray/pull/32) - Make 'write_crs' default to builtin CRS information
+* [PR 26](https://github.com/geoxarray/geoxarray/pull/26) - Add initial CRS handling to accessor
+* [PR 22](https://github.com/geoxarray/geoxarray/pull/22) - Drop Python <3.9 and update pre-commit
+* [PR 13](https://github.com/geoxarray/geoxarray/pull/13) - Add initial dimension handling in xarray accessors
+
+#### Documentation changes
+
+* [PR 31](https://github.com/geoxarray/geoxarray/pull/31) - Add documentation about projections, .crs, and .write_crs
+* [PR 19](https://github.com/geoxarray/geoxarray/pull/19) - Add basic structure and content to documentation
+
+In this release 6 pull requests were closed.
+
