@@ -152,11 +152,10 @@ a DataArray in ``.attrs["area"]``.
 .. testsetup::
 
    import xarray as xr
-   import dask.array as da
    from pyresample import AreaDefinition
    area = AreaDefinition("", "", "", "EPSG:3070", 10, 20,
                          (282455.22, 223080.17, 828240.35, 766436.45))
-   satpy_data_arr = xr.DataArray(da.zeros((20, 10)),
+   satpy_data_arr = xr.DataArray(np.zeros((20, 10)),
                            dims=("y", "x"), attrs={"area": area})
 
 .. testcode::
@@ -166,8 +165,8 @@ a DataArray in ``.attrs["area"]``.
 .. testoutput::
    :options: +SKIP
 
-   <xarray.DataArray 'zeros_like-3a0478cfb7d335c932035a68e3cac66f' (y: 20, x: 10)>
-   dask.array<zeros_like, shape=(20, 10), dtype=float64, chunksize=(20, 10), chunktype=numpy.ndarray>
+   <xarray.DataArray (y: 20, x: 10)>
+   ...
    Dimensions without coordinates: y, x
    Attributes:
        area:     Area ID: \nDescription: \nProjection: {'datum': 'NAD83', 'k': '...
