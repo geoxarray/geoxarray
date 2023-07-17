@@ -33,17 +33,25 @@ like bounding boxes.
 Installation
 ------------
 
-The ``geoxarray`` library will be available on PyPI and can be installed with
-pip::
+The ``geoxarray`` library isavailable on PyPI and can be installed with
+pip:
 
-    pip install geoxarray
+.. code-block:: bash
+
+   pip install geoxarray
 
 For the most recent development versions of geoxarray, it can be installed
-directly from the root of the source directory::
+directly from the root of the source directory:
 
-    pip install -e .
+.. code-block:: bash
 
-In the future geoxarray will also be available on conda-forge.
+   pip install -e .
+
+Or to install into an existing conda-based environment::
+
+.. code-block:: bash
+
+   conda install -c conda-forge geoxarray
 
 Dependencies
 ------------
@@ -81,4 +89,21 @@ bug on github.
 Features
 --------
 
-* TODO
+See the documentation website for how-tos, concepts, and API documentation.
+
+Parse various formats of storing Coordinate Reference System information:
+
+.. code-block:: python
+
+   import geoxarray
+
+   pyproj_crs = my_data_arr.geo.crs
+
+Write CRS information in a CF-compatible way or add CRS information
+to an object that didn't have any:
+
+.. code-block:: python
+
+    import geoxarray
+
+    new_dataset = my_dataset.geo.write_crs("EPSG:4326", inplace=False)
