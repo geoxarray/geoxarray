@@ -1,3 +1,14 @@
+## Version 0.1.0.post0 (2023/07/17)
+
+### Pull Requests Merged
+
+#### Bugs fixed
+
+* [PR 35](https://github.com/geoxarray/geoxarray/pull/35) - Fix requirements.txt not in sdist
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.1.0 (2023/07/16)
 
 ### Issues Closed
