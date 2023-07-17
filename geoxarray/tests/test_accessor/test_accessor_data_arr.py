@@ -130,7 +130,8 @@ def test_pyresample_write_crs():
 
 def test_write_crs_no_crs_found():
     data_arr = no_crs_no_dims_2d()
-    assert "grid_mapping" not in data_arr
+    assert "grid_mapping" not in data_arr.encoding
+    assert "grid_mapping" not in data_arr.attrs
     assert data_arr.geo.crs is None
     with pytest.raises(RuntimeError):
         data_arr.geo.write_crs()
