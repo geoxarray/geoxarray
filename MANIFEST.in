@@ -2,6 +2,7 @@ include AUTHORS.rst
 include CONTRIBUTING.rst
 include LICENSE
 include LICENSE_rioxarray
+include requirements.txt
 include README.rst
 
 recursive-exclude * __pycache__
