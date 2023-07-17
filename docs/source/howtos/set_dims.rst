@@ -1,8 +1,10 @@
-Specify your spatial and temporal dimensions
-============================================
+Specify spatial and temporal dimensions
+=======================================
 
 Assuming you have an Xarray object that has some atypical or unusual names
 for its dimensions, we can tell geoxarray what these dimensions represent.
+For more information on what dimensions geoxarray understands see the
+:doc:`../topics/dimensions` documentation.
 
 .. testsetup::
 
@@ -36,6 +38,8 @@ purpose by using
 :attr:`.geo.dims <geoxarray.accessor.GeoDataArrayAccessor.dims>`:
 
 .. testcode::
+
+    import geoxarray
 
     print(data_arr.geo.dims)
 

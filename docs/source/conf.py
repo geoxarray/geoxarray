@@ -216,12 +216,15 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "xarray": ("https://xarray.pydata.org/en/stable", None),
+    "xarray": ("https://docs.xarray.dev/en/stable", None),
     "dask": ("https://dask.pydata.org/en/latest", None),
-    "matplotlib": ("https://matplotlib.org", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
     "pyproj": ("https://pyproj4.github.io/pyproj/stable", None),
+    "proj": ("https://proj.org/en/latest", None),
     "rioxarray": ("https://corteva.github.io/rioxarray/stable", None),
+    "pyresample": ("https://pyresample.readthedocs.io/en/stable", None),
+    "satpy": ("https://satpy.readthedocs.io/en/stable", None),
 }

@@ -148,9 +148,16 @@ class _SharedGeoAccessor:
             sizes_dict[self.dim_map.get(dname, dname)] = size
         return self._obj.sizes.__class__(sizes_dict)
 
-    def write_dims(self, inplace: bool = False):
-        """Rename object's dimensions to match geoxarray's preferred dimension names."""
-        obj_copy = self._get_obj(inplace)
+    def write_dims(self) -> XarrayObject:
+        """Rename object's dimensions to match geoxarray's preferred dimension names.
+
+        This is a simple wrapper around Xarray's :meth:`xarray.DataArray.rename`
+        or :meth:`xarray.Dataset.rename` methods along with ``.geo.dim_map`` to
+        rename the dimension names. These methods always produce copies of the
+        original object. It is not possible to do this operation "inplace".
+
+        """
+        obj_copy = self._get_obj(inplace=False)
         return obj_copy.rename(self.dim_map)
 
     @property
@@ -219,7 +226,9 @@ class _SharedGeoAccessor:
             return area.crs
         return None
 
-    def write_crs(self, new_crs_info: Any, grid_mapping_name: str | None = None, inplace: bool = False) -> XarrayObject:
+    def write_crs(
+        self, new_crs_info: Any | None = None, grid_mapping_name: str | None = None, inplace: bool = False
+    ) -> XarrayObject:
         """Write the CRS to the xarray object in a CF compliant manner.
 
         .. note::
@@ -233,6 +242,8 @@ class _SharedGeoAccessor:
             Coordinate Reference System (CRS) information to write to the
             Xarray object. Can be a :class:`pyproj.CRS` object or anything
             understood by the :meth:`pyproj.CRS.from_user_input` method.
+            If not provided, the ``.crs`` property will be used.
+            If ``.crs`` returns ``None`` a ``RuntimeError`` is raised.
         grid_mapping_name:
             Name to use for the coordinate variable created and written by this
             method. The coordinate variable, also known as the grid mapping
@@ -244,8 +255,7 @@ class _SharedGeoAccessor:
 
         """
         obj = self._get_obj(inplace)
-        crs = CRS.from_user_input(new_crs_info)
-        obj.geo._crs = crs
+        crs = self._optional_crs_from_input(new_crs_info, obj)
         grid_mapping_var_name = self.grid_mapping if grid_mapping_name is None else grid_mapping_name
         if grid_mapping_var_name is None:
             grid_mapping_var_name = DEFAULT_GRID_MAPPING_VARIABLE_NAME
@@ -259,6 +269,16 @@ class _SharedGeoAccessor:
         obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
         _assign_grid_mapping(obj, grid_mapping_var_name)
         return obj
+
+    def _optional_crs_from_input(self, new_crs_info: Any | None, obj: XarrayObject) -> CRS:
+        if new_crs_info is None:
+            crs = self.crs
+            if crs is None:
+                raise RuntimeError("No CRS information provided or found.")
+        else:
+            crs = CRS.from_user_input(new_crs_info)
+            obj.geo._crs = crs
+        return crs
 
     @property
     def grid_mapping(self) -> str | None:
@@ -358,7 +378,7 @@ class GeoDatasetAccessor(_SharedGeoAccessor):
         # tell the dim_map property to produce the "as-is" dim map
         obj_copy.geo._dim_map = None
         dim_map = obj_copy.geo.dim_map
-        for data_arr in self._obj.data_vars.values():
+        for data_arr in obj_copy.data_vars.values():
             dims = {k: v for k, v in all_dims.items() if v in data_arr.dims}
             if not dims:
                 continue
@@ -423,7 +443,8 @@ class GeoDataArrayAccessor(_SharedGeoAccessor):
         by best guess.
 
         This information does not rename or modify the data of the Xarray
-        object itself.
+        object itself. To easily rename the dimensions in a Geoxarray-friendly
+        manner, follow a call of this method with :meth:`write_dims`.
 
         Parameters
         ----------

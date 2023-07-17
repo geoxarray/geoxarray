@@ -115,3 +115,23 @@ def test_no_crs_write_crs(inplace, gmap_var_name):
 def test_pyresample_area_2d_crs():
     data_arr = pyr_geos_area_2d()
     assert data_arr.geo.crs == data_arr.attrs["area"].crs
+
+
+def test_pyresample_write_crs():
+    data_arr = pyr_geos_area_2d()
+    assert "grid_mapping" not in data_arr.encoding
+    assert "grid_mapping" not in data_arr.attrs
+    assert "spatial_ref" not in data_arr.coords
+    new_data_arr = data_arr.geo.write_crs()
+    assert "grid_mapping" in new_data_arr.encoding
+    assert "grid_mapping" not in new_data_arr.attrs
+    assert "spatial_ref" in new_data_arr.coords
+
+
+def test_write_crs_no_crs_found():
+    data_arr = no_crs_no_dims_2d()
+    assert "grid_mapping" not in data_arr.encoding
+    assert "grid_mapping" not in data_arr.attrs
+    assert data_arr.geo.crs is None
+    with pytest.raises(RuntimeError):
+        data_arr.geo.write_crs()

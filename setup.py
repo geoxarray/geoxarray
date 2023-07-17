@@ -24,6 +24,7 @@ with open(path.join(here, "requirements.txt")) as requirements_file:
 
 extras_require = {
     "pyresample": ["pyresample"],
+    "docs": ["sphinx_rtd_theme", "numpydoc", "sphinx_copybutton", "sphinxcontrib-apidoc", "pyresample"],
 }
 all_extras = []
 for extra_deps in extras_require.values():

@@ -14,25 +14,6 @@ and plotting.
     Geoxarray is currently in a pre-alpha state and may not do most of what
     you'd expect a library with the above description to do.
 
-.. warning::
-
-    Geoxarray has not had a release yet. Instructions referencing installing
-    from PyPI or conda-forge are there as placeholders and will not run
-    properly until there is a release.
-
-Geoxarray directly uses, borrows from, or is based on the ideas of other open
-source projects including:
-
-* `rioxarray <https://corteva.github.io/rioxarray/stable/>`_
-* `rasterio <https://rasterio.readthedocs.io/en/latest/>`_
-* `satpy <https://satpy.readthedocs.io/en/stable/>`_
-* `pyresample <https://pyresample.readthedocs.io/en/latest/>`_
-* `xgcm <https://xgcm.readthedocs.io/en/latest/>`_
-* `xesmf <https://xesmf.readthedocs.io/en/latest/>`_
-* `The Pangeo Community <https://pangeo.io/>`_
-
-
-
 Geoxarray Documentation
 -----------------------
 
@@ -61,7 +42,9 @@ For more on how this documentation is structured, see
    :glob:
 
    installation
-   topics/*
+   topics/xarray_accessors
+   topics/dimensions
+   topics/projections
    faq
 
 .. toctree::
@@ -80,4 +63,4 @@ For more on how this documentation is structured, see
    roadmap
    Release Notes <https://github.com/geoxarray/geoxarray/blob/main/CHANGELOG.md>
    GitHub Project <https://github.com/geoxarray/geoxarray>
-
+   related
