@@ -33,7 +33,7 @@ like bounding boxes.
 Installation
 ------------
 
-The ``geoxarray`` library isavailable on PyPI and can be installed with
+The ``geoxarray`` library is available on PyPI and can be installed with
 pip:
 
 .. code-block:: bash
