@@ -139,7 +139,7 @@ jobs:
           pytest --cov=geoxarray geoxarray/tests
 
       - name: Coveralls Parallel
-        uses: AndresMiras/coveralls-python-action@develop
+        uses: AndreMiras/coveralls-python-action@develop
         with:
           flag-name: run-${{ matrix.test_number }}
           parallel: true
@@ -150,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: AndresMiras/coveralls-python-action@develop
+        uses: AndreMiras/coveralls-python-action@develop
         with:
           parallel-finished: true
 
