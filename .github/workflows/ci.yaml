@@ -139,8 +139,7 @@ jobs:
           pytest --cov=geoxarray geoxarray/tests
 
       - name: Coveralls Parallel
-        # See https://github.com/AndreMiras/coveralls-python-action/pull/16
-        uses: djhoese/coveralls-python-action@feature-cython-coverage
+        uses: AndresMiras/coveralls-python-action@develop
         with:
           flag-name: run-${{ matrix.test_number }}
           parallel: true
@@ -151,8 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        # See https://github.com/AndreMiras/coveralls-python-action/pull/16
-        uses: djhoese/coveralls-python-action@feature-cython-coverage
+        uses: AndresMiras/coveralls-python-action@develop
         with:
           parallel-finished: true
 
