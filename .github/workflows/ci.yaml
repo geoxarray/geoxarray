@@ -110,12 +110,12 @@ jobs:
         if: matrix.experimental == true
         shell: bash -l {0}
         run: |
+          python -m pip install --pre --no-deps --upgrade numpy; \
           python -m pip install \
           --index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/ \
           --trusted-host pypi.anaconda.org \
           --no-deps --pre --upgrade \
           matplotlib \
-          "numpy<2" \
           pandas \
           scipy; \
           python -m pip install \
