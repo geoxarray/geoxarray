@@ -1,3 +1,22 @@
+## Version 0.1.0.post1 (2023/09/20)
+
+### Issues Closed
+
+* [Issue 7](https://github.com/geoxarray/geoxarray/issues/7) - rioxarray
+* [Issue 6](https://github.com/geoxarray/geoxarray/issues/6) - Project Status
+* [Issue 2](https://github.com/geoxarray/geoxarray/issues/2) - Design: active versus passive coordinate assignment
+
+In this release 3 issues were closed.
+
+### Pull Requests Merged
+
+#### Documentation changes
+
+* [PR 36](https://github.com/geoxarray/geoxarray/pull/36) - Update README with features and conda-forge install instructions
+
+In this release 1 pull request was closed.
+
+
 ## Version 0.1.0.post0 (2023/07/17)
 
 ### Pull Requests Merged
