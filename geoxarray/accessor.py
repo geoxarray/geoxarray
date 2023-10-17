@@ -45,7 +45,7 @@ to other formats (CF compatible NetCDF file).
 from __future__ import annotations
 
 import warnings
-from typing import Any, Literal, TypeVar, Generic
+from typing import Any, Generic, Literal, TypeVar
 
 import xarray as xr
 from pyproj import CRS
