@@ -45,7 +45,7 @@ to other formats (CF compatible NetCDF file).
 from __future__ import annotations
 
 import warnings
-from typing import Any, Literal, TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 import xarray as xr
 from pyproj import CRS
@@ -73,7 +73,7 @@ DEFAULT_GRID_MAPPING_VARIABLE_NAME = "spatial_ref"
 XarrayObject = TypeVar("XarrayObject", xr.DataArray, xr.Dataset)
 
 
-class _SharedGeoAccessor:
+class _SharedGeoAccessor(Generic[XarrayObject]):
     """Accessor functionality shared between Dataset and DataArray objects."""
 
     def __init__(self, xarray_obj: XarrayObject) -> None:
