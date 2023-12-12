@@ -2,7 +2,7 @@ exclude: '^$'
 fail_fast: false
 repos:
   - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.1
     hooks:
       - id: isort
         language_version: python3
