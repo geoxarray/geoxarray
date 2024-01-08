@@ -18,7 +18,7 @@ repos:
       - id: black
         language_version: python3 # Should be a command that runs python3.6+
   - repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
+    rev: 7.0.0
     hooks:
       - id: flake8
         language_version: python3
