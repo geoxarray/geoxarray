@@ -19,7 +19,7 @@ import numpy as np
 import xarray as xr
 from dask import array as da
 
-from ._data_array_cases import cf_grid_mapping_geos_no_wkt
+from ._data_array_cases import cf_grid_mapping_geos_no_wkt, cf_grid_mapping_with_wkt
 from ._shared import OTHER_DIM_SIZE, X_DIM_SIZE, Y_DIM_SIZE
 
 
@@ -102,4 +102,13 @@ def cf_3vars_1gm_geos_y_x() -> xr.Dataset:
     ds = cf_1gm_geos_y_x()
     ds["Rad2"] = ds["Rad"].copy()
     ds["Rad3"] = ds["Rad"].copy()
+    return ds
+
+
+def geotiff_as_read_by_rioxarray() -> xr.Dataset:
+    """Create a dataset liking a geotiff read by rioxarray."""
+    spatial_ref = cf_grid_mapping_with_wkt()
+    ds = xr.Dataset({
+        "band_data": xr.DataArray(da.zeros((1, Y_DIM_SIZE, X_DIM_SIZE)), dims=("band", "y", "x"))},
+        coords=dict(band=[1], spatial_ref=spatial_ref))
     return ds

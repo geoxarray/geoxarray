@@ -313,6 +313,15 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
                 continue
             yield var_grid_mapping
 
+    @property
+    def gcps(self) -> dict | None:
+        """Get the GCPs."""
+        return self._obj.coords["spatial_ref"].attrs.get("gcps")
+
+    def write_gcps(self, gcps) -> None:
+        """Write the GCPs to the spatial ref."""
+        self._obj.coords["spatial_ref"].attrs["gcps"] = gcps
+
 
 def _get_encoding_or_attr(xr_obj: xr.Dataset | xr.DataArray, attr_name: str) -> Any:
     return xr_obj.encoding.get(attr_name, xr_obj.attrs.get(attr_name))
