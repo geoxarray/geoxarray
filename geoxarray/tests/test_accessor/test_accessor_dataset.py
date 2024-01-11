@@ -25,7 +25,7 @@ from ._dataset_cases import (
     cf_1gm_geos_y_x,
     cf_3gm_geos_y_x,
     cf_3vars_1gm_geos_y_x,
-    geotiff_as_read_by_rioxarray
+    geotiff_as_read_by_rioxarray,
 )
 from ._shared import check_written_crs
 
@@ -119,6 +119,7 @@ def test_netcdf_grid_mapping_round_trip(tmp_path):
     assert nc_ds.geo.crs == new_crs
     assert nc_ds["Rad"].geo.crs == new_crs
     assert "spatial_ref" in nc_ds.coords
+
 
 def test_using_gcps():
     """Test using the GCPs."""

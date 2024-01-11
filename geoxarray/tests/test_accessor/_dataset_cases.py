@@ -108,7 +108,8 @@ def cf_3vars_1gm_geos_y_x() -> xr.Dataset:
 def geotiff_as_read_by_rioxarray() -> xr.Dataset:
     """Create a dataset liking a geotiff read by rioxarray."""
     spatial_ref = cf_grid_mapping_with_wkt()
-    ds = xr.Dataset({
-        "band_data": xr.DataArray(da.zeros((1, Y_DIM_SIZE, X_DIM_SIZE)), dims=("band", "y", "x"))},
-        coords=dict(band=[1], spatial_ref=spatial_ref))
+    ds = xr.Dataset(
+        {"band_data": xr.DataArray(da.zeros((1, Y_DIM_SIZE, X_DIM_SIZE)), dims=("band", "y", "x"))},
+        coords=dict(band=[1], spatial_ref=spatial_ref),
+    )
     return ds
