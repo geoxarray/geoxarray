@@ -47,6 +47,8 @@ from __future__ import annotations
 import warnings
 from typing import Any, Generic, Literal, TypeVar
 
+import numpy as np
+import xarray
 import xarray as xr
 from pyproj import CRS
 from pyproj.exceptions import CRSError
@@ -312,6 +314,40 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
             if var_grid_mapping is None:
                 continue
             yield var_grid_mapping
+
+    def write_spatial_coords(self, inplace: bool = False) -> xarray.DataArray:
+        """Write 'y' and 'x' coordinate arrays to ``.coords``.
+
+        This operation always produces a new copy of the xarray object. See
+        :meth:`xarray.DataArray.assign_coords` and
+        :meth:`xarray.Dataset.assign_coords`.
+
+        Coordinate arrays are currently always a single point per data pixel
+        representing the center of the pixel.
+
+        """
+        # TODO: Add dask functionality?
+        obj = self._get_obj(inplace)
+        if "ModelPixelScale" in obj.attrs:
+            # tifffile as loaded by kerchunk
+            width = obj.geo.sizes["x"]
+            height = obj.geo.sizes["y"]
+            x_pixel_res, y_pixel_res = obj.attrs["ModelPixelScale"][:2]
+            x_left, y_top = obj.attrs["ModelTiepoint"][3:5]
+            x_coord = (x_left + x_pixel_res / 2.0) + np.arange(width) * x_pixel_res
+            y_coord = (y_top - y_pixel_res / 2.0) - np.arange(height) * y_pixel_res
+            # XXX: What to do with  'GTRasterTypeGeoKey': <RasterPixel.IsArea: 1>?
+        else:
+            raise RuntimeError("Unknown data structure. Can't compute spatial coordinates.")
+
+        obj = obj.assign_coords(
+            {
+                # FIXME: This is the wrong dim map (need the reverse)
+                obj.geo.dim_map["y"]: y_coord,
+                obj.geo.dim_map["x"]: x_coord,
+            }
+        )
+        return obj
 
 
 def _get_encoding_or_attr(xr_obj: xr.Dataset | xr.DataArray, attr_name: str) -> Any:

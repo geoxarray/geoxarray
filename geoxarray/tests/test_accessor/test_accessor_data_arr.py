@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Tests for the xarray DataArray-specific accessor."""
-
+import numpy as np
 import pytest
 from pyproj import CRS
 
@@ -34,6 +34,7 @@ from ._data_array_cases import (
     no_crs_no_dims_2d,
     pyr_geos_area_2d,
     raw_coords_lats1d_lons1d,
+    tifffile_with_geometa,
 )
 from ._shared import (
     ALT_DIM_SIZE,
@@ -117,6 +118,7 @@ def test_pyresample_area_2d_crs():
     assert data_arr.geo.crs == data_arr.attrs["area"].crs
 
 
+@pytest.mark.skipif(AreaDefinition is None, reason="Test dependency missing: pyresample")
 def test_pyresample_write_crs():
     data_arr = pyr_geos_area_2d()
     assert "grid_mapping" not in data_arr.encoding
@@ -135,3 +137,59 @@ def test_write_crs_no_crs_found():
     assert data_arr.geo.crs is None
     with pytest.raises(RuntimeError):
         data_arr.geo.write_crs()
+
+
+def test_create_coords_tifffile():
+    data_arr = tifffile_with_geometa()
+    assert "y" not in data_arr.coords
+    assert "x" not in data_arr.coords
+
+    new_data_arr = data_arr.geo.write_spatial_coords()
+    assert "y" in new_data_arr.coords
+    assert "x" in new_data_arr.coords
+    assert "y" not in data_arr.coords
+    assert "x" not in data_arr.coords
+    np.testing.assert_allclose(
+        new_data_arr.coords["x"],
+        np.array(
+            [
+                -5434393.880734,
+                -5433391.87209,
+                -5432389.863446,
+                -5431387.854802,
+                -5430385.846158,
+                -5429383.837514,
+                -5428381.82887,
+                -5427379.820226,
+                -5426377.811582,
+                -5425375.802938,
+                -5424373.794294,
+                -5423371.78565,
+                -5422369.777006,
+                -5421367.768362,
+                -5420365.759718,
+                -5419363.751074,
+                -5418361.74243,
+                -5417359.733786,
+                -5416357.725142,
+                -5415355.716498,
+            ]
+        ),
+    )
+    np.testing.assert_allclose(
+        new_data_arr.coords["y"],
+        np.array(
+            [
+                5434393.880734,
+                5433391.87209,
+                5432389.863446,
+                5431387.854802,
+                5430385.846158,
+                5429383.837514,
+                5428381.82887,
+                5427379.820226,
+                5426377.811582,
+                5425375.802938,
+            ]
+        ),
+    )

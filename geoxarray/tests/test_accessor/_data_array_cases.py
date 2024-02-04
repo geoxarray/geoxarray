@@ -15,6 +15,7 @@
 """Test cases for DataArray-specific interfaces."""
 from __future__ import annotations
 
+import pytest
 import xarray as xr
 from dask import array as da
 from pyproj import CRS
@@ -154,6 +155,7 @@ def no_crs_no_dims_2d():
     return xr.DataArray(da.empty((Y_DIM_SIZE, X_DIM_SIZE)))
 
 
+@pytest.mark.skipif(AreaDefinition is None, reason="Test dependency missing: pyresample")
 def pyr_geos_area_2d() -> xr.DataArray:
     geos_crs = CRS.from_dict(
         {
@@ -170,4 +172,12 @@ def pyr_geos_area_2d() -> xr.DataArray:
     )
     data_arr = no_crs_no_dims_2d()
     data_arr.attrs["area"] = area
+    return data_arr
+
+
+def tifffile_with_geometa() -> xr.DataArray:
+    """Create DataArray mimicking kerchunk's use of tifffile."""
+    data_arr = geotiff_y_x()
+    data_arr.attrs["ModelPixelScale"] = [1002.008644, 1002.008644, 0.0]
+    data_arr.attrs["ModelTiepoint"] = [0.0, 0.0, 0.0, -5434894.885056, 5434894.885056, 0.0]
     return data_arr
