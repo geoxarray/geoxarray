@@ -34,6 +34,7 @@ from ._data_array_cases import (
     no_crs_no_dims_2d,
     pyr_geos_area_2d,
     raw_coords_lats1d_lons1d,
+    tifffile_nonyx_with_geometa,
     tifffile_with_geometa,
 )
 from ._shared import (
@@ -145,18 +146,27 @@ def test_write_coords_unknown():
         data_arr.geo.write_spatial_coords()
 
 
-def test_write_coords_tifffile():
-    data_arr = tifffile_with_geometa()
+@pytest.mark.parametrize(
+    ("data_func", "y_dim", "x_dim"),
+    [
+        (tifffile_with_geometa, "y", "x"),
+        (tifffile_nonyx_with_geometa, "a", "b"),
+    ],
+)
+def test_write_coords_tifffile(data_func, y_dim, x_dim):
+    data_arr = data_func()
     assert "y" not in data_arr.coords
     assert "x" not in data_arr.coords
 
     new_data_arr = data_arr.geo.write_spatial_coords()
-    assert "y" in new_data_arr.coords
-    assert "x" in new_data_arr.coords
+    assert y_dim in new_data_arr.coords
+    assert x_dim in new_data_arr.coords
     assert "y" not in data_arr.coords
     assert "x" not in data_arr.coords
+    assert y_dim not in data_arr.coords
+    assert x_dim not in data_arr.coords
     np.testing.assert_allclose(
-        new_data_arr.coords["x"],
+        new_data_arr.coords[x_dim],
         np.array(
             [
                 -5434393.880734,
@@ -183,7 +193,7 @@ def test_write_coords_tifffile():
         ),
     )
     np.testing.assert_allclose(
-        new_data_arr.coords["y"],
+        new_data_arr.coords[y_dim],
         np.array(
             [
                 5434393.880734,

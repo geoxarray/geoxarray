@@ -132,6 +132,12 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
 
         return self._dim_map
 
+    @property
+    def _geo_dim_map(self):
+        """Map geoxarray preferred dim name to current data dimension name."""
+        dim_map = self.dim_map
+        return {gx_dim: curr_dim for curr_dim, gx_dim in dim_map.items()}
+
     def set_dims(self, *args, **kwargs) -> None:
         """Tell geoxarray the names of the provided dimensions in this Xarray object."""
         raise NotImplementedError()
@@ -328,6 +334,9 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         """
         # TODO: Add dask functionality?
         obj = self._get_obj(inplace)
+        geo_dim_map = obj.geo._geo_dim_map
+        y_dim_name = geo_dim_map["y"]
+        x_dim_name = geo_dim_map["x"]
         if "ModelPixelScale" in obj.attrs:
             # tifffile as loaded by kerchunk
             width = obj.geo.sizes["x"]
@@ -343,8 +352,8 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         obj = obj.assign_coords(
             {
                 # FIXME: This is the wrong dim map (need the reverse)
-                obj.geo.dim_map["y"]: y_coord,
-                obj.geo.dim_map["x"]: x_coord,
+                y_dim_name: y_coord,
+                x_dim_name: x_coord,
             }
         )
         return obj

@@ -181,3 +181,11 @@ def tifffile_with_geometa() -> xr.DataArray:
     data_arr.attrs["ModelPixelScale"] = [1002.008644, 1002.008644, 0.0]
     data_arr.attrs["ModelTiepoint"] = [0.0, 0.0, 0.0, -5434894.885056, 5434894.885056, 0.0]
     return data_arr
+
+
+def tifffile_nonyx_with_geometa() -> xr.DataArray:
+    """Create DataArray mimicking kerchunk's use of tifffile."""
+    data_arr = geotiff_b_a()
+    data_arr.attrs["ModelPixelScale"] = [1002.008644, 1002.008644, 0.0]
+    data_arr.attrs["ModelTiepoint"] = [0.0, 0.0, 0.0, -5434894.885056, 5434894.885056, 0.0]
+    return data_arr
