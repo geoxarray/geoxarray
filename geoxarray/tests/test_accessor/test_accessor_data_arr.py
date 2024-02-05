@@ -139,7 +139,13 @@ def test_write_crs_no_crs_found():
         data_arr.geo.write_crs()
 
 
-def test_create_coords_tifffile():
+def test_write_coords_unknown():
+    data_arr = no_crs_no_dims_2d()
+    with pytest.raises(RuntimeError):
+        data_arr.geo.write_spatial_coords()
+
+
+def test_write_coords_tifffile():
     data_arr = tifffile_with_geometa()
     assert "y" not in data_arr.coords
     assert "x" not in data_arr.coords
