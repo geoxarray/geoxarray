@@ -14,7 +14,7 @@
 # limitations under the License.
 """XArray extensions via accessor objects.
 
-The functionality in this module can be accessed via the `.geo` accessor on
+The functionality in this module can be accessed via the ``.geo`` accessor on
 any xarray DataArray or Dataset object.
 
 Geolocation cases that these accessors are supposed to be able to handle:
@@ -47,11 +47,12 @@ from __future__ import annotations
 import warnings
 from typing import Any, Generic, Literal, TypeVar
 
-import numpy as np
 import xarray
 import xarray as xr
 from pyproj import CRS
 from pyproj.exceptions import CRSError
+
+from .coords import generate_spatial_coords
 
 try:
     from pyresample.geometry import AreaDefinition, SwathDefinition
@@ -332,28 +333,16 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         representing the center of the pixel.
 
         """
-        # TODO: Add dask functionality?
         obj = self._get_obj(inplace)
         geo_dim_map = obj.geo._geo_dim_map
         y_dim_name = geo_dim_map["y"]
         x_dim_name = geo_dim_map["x"]
-        if "ModelPixelScale" in obj.attrs:
-            # tifffile as loaded by kerchunk
-            width = obj.geo.sizes["x"]
-            height = obj.geo.sizes["y"]
-            x_pixel_res, y_pixel_res = obj.attrs["ModelPixelScale"][:2]
-            x_left, y_top = obj.attrs["ModelTiepoint"][3:5]
-            x_coord = (x_left + x_pixel_res / 2.0) + np.arange(width) * x_pixel_res
-            y_coord = (y_top - y_pixel_res / 2.0) - np.arange(height) * y_pixel_res
-            # XXX: What to do with  'GTRasterTypeGeoKey': <RasterPixel.IsArea: 1>?
-        else:
-            raise RuntimeError("Unknown data structure. Can't compute spatial coordinates.")
 
+        coords_dict = generate_spatial_coords(obj)
         obj = obj.assign_coords(
             {
-                # FIXME: This is the wrong dim map (need the reverse)
-                y_dim_name: y_coord,
-                x_dim_name: x_coord,
+                y_dim_name: coords_dict["y"],
+                x_dim_name: coords_dict["x"],
             }
         )
         return obj
