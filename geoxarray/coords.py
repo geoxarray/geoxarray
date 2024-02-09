@@ -26,8 +26,30 @@ import numpy.typing as npt
 import xarray as xr
 
 
-def generate_spatial_coords(data_arr: xr.DataArray) -> dict[str, npt.ArrayLike]:
+def spatial_coords(data_arr: xr.DataArray) -> dict[str, npt.ArrayLike]:
+    """Generate 1-dimensional spatial coordinate arrays for a DataArray.
+
+    Parameters
+    ----------
+    data_arr
+        DataArray object to extract geolocation information from and
+        generate the corresponding coordinate arrays.
+
+    Returns
+    -------
+        Dictionary mapping "x" and "y" dimension names to the corresponding
+        1-dimensional array-like object. Currently only numpy arrays are
+        returned.
+
+    Raises
+    ------
+    ValueError
+        If the necessary metadata can't be found in the DataArray
+
+    """
     # TODO: Add dask functionality?
+    # TODO: Add pyresample AreaDefinition support
+    # TODO: Add 2D y/x nonuniform coordinates (pyresample's SwathDefinition, GCPs, etc)
     if "ModelPixelScale" in data_arr.attrs:
         # tifffile as loaded by kerchunk
         width = data_arr.geo.sizes["x"]
@@ -38,5 +60,5 @@ def generate_spatial_coords(data_arr: xr.DataArray) -> dict[str, npt.ArrayLike]:
         y_coord = (y_top - y_pixel_res / 2.0) - np.arange(height) * y_pixel_res
         # XXX: What to do with  'GTRasterTypeGeoKey': <RasterPixel.IsArea: 1>?
     else:
-        raise RuntimeError("Unknown data structure. Can't compute spatial coordinates.")
+        raise ValueError("Unknown data structure. Can't compute spatial coordinates.")
     return {"y": y_coord, "x": x_coord}

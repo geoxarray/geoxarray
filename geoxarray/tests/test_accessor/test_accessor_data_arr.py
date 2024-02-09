@@ -142,7 +142,7 @@ def test_write_crs_no_crs_found():
 
 def test_write_coords_unknown():
     data_arr = no_crs_no_dims_2d()
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         data_arr.geo.write_spatial_coords()
 
 

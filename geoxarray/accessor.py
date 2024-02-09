@@ -52,7 +52,7 @@ import xarray as xr
 from pyproj import CRS
 from pyproj.exceptions import CRSError
 
-from .coords import generate_spatial_coords
+from .coords import spatial_coords
 
 try:
     from pyresample.geometry import AreaDefinition, SwathDefinition
@@ -322,7 +322,7 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
                 continue
             yield var_grid_mapping
 
-    def write_spatial_coords(self, inplace: bool = False) -> xarray.DataArray:
+    def write_spatial_coords(self) -> xarray.DataArray:
         """Write 'y' and 'x' coordinate arrays to ``.coords``.
 
         This operation always produces a new copy of the xarray object. See
@@ -333,12 +333,13 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         representing the center of the pixel.
 
         """
-        obj = self._get_obj(inplace)
+        # don't make an extra copy, assign_coords will do it for us
+        obj = self._get_obj(inplace=True)
         geo_dim_map = obj.geo._geo_dim_map
         y_dim_name = geo_dim_map["y"]
         x_dim_name = geo_dim_map["x"]
 
-        coords_dict = generate_spatial_coords(obj)
+        coords_dict = spatial_coords(obj)
         obj = obj.assign_coords(
             {
                 y_dim_name: coords_dict["y"],
