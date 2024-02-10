@@ -45,6 +45,7 @@ For more on how this documentation is structured, see
    topics/xarray_accessors
    topics/dimensions
    topics/projections
+   topics/coordinates
    faq
 
 .. toctree::
