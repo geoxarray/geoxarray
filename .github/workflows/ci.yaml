@@ -109,7 +109,9 @@ jobs:
       - name: Install unstable dependencies
         if: matrix.experimental == true
         shell: bash -l {0}
+        # NOTE: pyarrow only needed for pandas 3 unstable dependency
         run: |
+          python -m pip install pyarrow;
           python -m pip install \
           --index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/ \
           --trusted-host pypi.anaconda.org \
