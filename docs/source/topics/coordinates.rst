@@ -7,7 +7,7 @@ Dataset. By defining coordinate arrays our DataArrays we essentially label
 the dimensions like ticks on a plot axis. For more information on coordinate
 functionality see the :term:`Xarray documentation <xarray:Coordinate>`.
 
-The below sections go into the details of how Geoxarray uses and defines
+The below sections go into the details of how geoxarray uses and defines
 certain types of coordinate arrays.
 
 Spatial Coordinates

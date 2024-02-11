@@ -329,6 +329,9 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         :meth:`xarray.DataArray.assign_coords` and
         :meth:`xarray.Dataset.assign_coords`.
 
+        See :func:`geoxarray.coords.spatial_coords` for supported metadata
+        structures.
+
         Coordinate arrays are currently always a single point per data pixel
         representing the center of the pixel.
 

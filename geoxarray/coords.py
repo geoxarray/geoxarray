@@ -29,6 +29,10 @@ import xarray as xr
 def spatial_coords(data_arr: xr.DataArray) -> dict[str, npt.ArrayLike]:
     """Generate 1-dimensional spatial coordinate arrays for a DataArray.
 
+    Currently supported cases are:
+
+    * geotiff read with kerchunk via tifffile
+
     Parameters
     ----------
     data_arr
