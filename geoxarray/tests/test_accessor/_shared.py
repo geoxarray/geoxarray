@@ -15,6 +15,8 @@
 """Shared information and utilities for the data cases."""
 from __future__ import annotations
 
+import os
+
 import xarray as xr
 from pyproj import CRS
 
@@ -25,6 +27,8 @@ try:
 except ImportError:
     AreaDefinition = None
 
+IS_CI = os.getenv("CI", "false").lower() == "true"
+MISSING_PYRESAMPLE = AreaDefinition is None and not IS_CI
 
 X_DIM_SIZE = 20
 Y_DIM_SIZE = 10

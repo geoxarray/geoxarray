@@ -51,6 +51,7 @@ extensions = [
     "numpydoc",
     "sphinx_copybutton",
     "sphinxcontrib.apidoc",
+    "sphinx_autodoc_typehints",
 ]
 
 # Mock
