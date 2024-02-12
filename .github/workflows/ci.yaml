@@ -140,6 +140,12 @@ jobs:
         run: |
           pytest --cov=geoxarray geoxarray/tests
 
+      - name: Test website
+        shell: bash -l {0}
+        run: |
+          python -m pip install -r requirements-dev.txt;
+          cd docs && mkdir doctest && sphinx-build -E -n -b doctest ./source ./doctest && cd ..
+
       - name: Coveralls Parallel
         uses: AndreMiras/coveralls-python-action@develop
         with:

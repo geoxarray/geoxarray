@@ -15,7 +15,6 @@
 """Test cases for DataArray-specific interfaces."""
 from __future__ import annotations
 
-import pytest
 import xarray as xr
 from dask import array as da
 from pyproj import CRS
@@ -155,7 +154,6 @@ def no_crs_no_dims_2d():
     return xr.DataArray(da.empty((Y_DIM_SIZE, X_DIM_SIZE)))
 
 
-@pytest.mark.skipif(AreaDefinition is None, reason="Test dependency missing: pyresample")
 def pyr_geos_area_2d() -> xr.DataArray:
     geos_crs = CRS.from_dict(
         {

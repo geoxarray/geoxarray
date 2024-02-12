@@ -56,7 +56,7 @@ object and called :meth:`xarray.Dataset.to_netcdf`.
 
    spatial_ref
    <xarray.DataArray 'spatial_ref' ()>
-   array(0)
+   ...
    Coordinates:
        spatial_ref  int64 0
    Attributes:
