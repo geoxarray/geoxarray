@@ -110,6 +110,7 @@ jobs:
         if: matrix.experimental == true
         shell: bash -l {0}
         run: |
+          conda uninstall --force-remove -y pyarrow;
           mamba install -y --override-channels -c arrow-nightlies pyarrow;
           python -m pip install \
           --index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/ \
