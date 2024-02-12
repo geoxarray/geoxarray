@@ -39,9 +39,9 @@ from ._data_array_cases import (
 )
 from ._shared import (
     ALT_DIM_SIZE,
+    MISSING_PYRESAMPLE,
     X_DIM_SIZE,
     Y_DIM_SIZE,
-    AreaDefinition,
     check_written_crs,
 )
 
@@ -113,13 +113,13 @@ def test_no_crs_write_crs(inplace, gmap_var_name):
     check_written_crs(new_data_arr, new_crs, gmap_var_name)
 
 
-@pytest.mark.skipif(AreaDefinition is None, reason="Missing 'pyresample' dependency")
+@pytest.mark.skipif(MISSING_PYRESAMPLE, reason="Missing 'pyresample' dependency")
 def test_pyresample_area_2d_crs():
     data_arr = pyr_geos_area_2d()
     assert data_arr.geo.crs == data_arr.attrs["area"].crs
 
 
-@pytest.mark.skipif(AreaDefinition is None, reason="Test dependency missing: pyresample")
+@pytest.mark.skipif(MISSING_PYRESAMPLE, reason="Test dependency missing: pyresample")
 def test_pyresample_write_crs():
     data_arr = pyr_geos_area_2d()
     assert "grid_mapping" not in data_arr.encoding
