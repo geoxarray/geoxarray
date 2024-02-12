@@ -47,6 +47,7 @@ from __future__ import annotations
 import warnings
 from typing import Any, Generic, Literal, TypeVar
 
+import numpy as np
 import xarray
 import xarray as xr
 from pyproj import CRS
@@ -274,7 +275,7 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         gm_attrs["crs_wkt"] = crs_wkt  # CF compatibility
         gm_attrs["spatial_ref"] = crs_wkt  # GDAL support
 
-        obj.coords[grid_mapping_var_name] = xr.Variable((), 0)
+        obj.coords[grid_mapping_var_name] = xr.Variable((), np.int64(0))
         obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
         _assign_grid_mapping(obj, grid_mapping_var_name)
         return obj
