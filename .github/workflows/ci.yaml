@@ -110,7 +110,7 @@ jobs:
         if: matrix.experimental == true
         shell: bash -l {0}
         run: |
-          mamba install -y --force-reinstall --override-channels -c arrow-nightlies pyarrow;
+          mamba install -y --override-channels -c arrow-nightlies pyarrow;
           python -m pip install \
           --index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple/ \
           --trusted-host pypi.anaconda.org \
