@@ -46,4 +46,10 @@ warn_unreachable = true
 warn_unused_configs = true
 
 [tool.pytest.ini_options]
-filterwarnings = ["error", "ignore:numpy.ndarray size changed:RuntimeWarning"]
+filterwarnings = [
+    "error",
+    "ignore:numpy.ndarray size changed:RuntimeWarning",
+    # dateutil needs a new release
+    # https://github.com/dateutil/dateutil/issues/1314
+    'ignore:datetime.datetime.utcfromtimestamp\(\) is deprecated and scheduled for removal:DeprecationWarning:dateutil',
+]

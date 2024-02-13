@@ -11,6 +11,7 @@ numpydoc
 sphinx-copybutton
 sphinx_rtd_theme
 sphinxcontrib-apidoc
+sphinx-autodoc-typehints
 # Package optional dependencies that are required for testing
 pyresample
 dask

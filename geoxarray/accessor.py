@@ -14,7 +14,7 @@
 # limitations under the License.
 """XArray extensions via accessor objects.
 
-The functionality in this module can be accessed via the `.geo` accessor on
+The functionality in this module can be accessed via the ``.geo`` accessor on
 any xarray DataArray or Dataset object.
 
 Geolocation cases that these accessors are supposed to be able to handle:
@@ -47,9 +47,13 @@ from __future__ import annotations
 import warnings
 from typing import Any, Generic, Literal, TypeVar
 
+import numpy as np
+import xarray
 import xarray as xr
 from pyproj import CRS
 from pyproj.exceptions import CRSError
+
+from .coords import spatial_coords
 
 try:
     from pyresample.geometry import AreaDefinition, SwathDefinition
@@ -129,6 +133,12 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
                 self._dim_map[self._time_dim] = "time"
 
         return self._dim_map
+
+    @property
+    def _geo_dim_map(self):
+        """Map geoxarray preferred dim name to current data dimension name."""
+        dim_map = self.dim_map
+        return {gx_dim: curr_dim for curr_dim, gx_dim in dim_map.items()}
 
     def set_dims(self, *args, **kwargs) -> None:
         """Tell geoxarray the names of the provided dimensions in this Xarray object."""
@@ -265,7 +275,7 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         gm_attrs["crs_wkt"] = crs_wkt  # CF compatibility
         gm_attrs["spatial_ref"] = crs_wkt  # GDAL support
 
-        obj.coords[grid_mapping_var_name] = xr.Variable((), 0)
+        obj.coords[grid_mapping_var_name] = xr.Variable((), np.int64(0))
         obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
         _assign_grid_mapping(obj, grid_mapping_var_name)
         return obj
@@ -312,6 +322,35 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
             if var_grid_mapping is None:
                 continue
             yield var_grid_mapping
+
+    def write_spatial_coords(self) -> xarray.DataArray:
+        """Write 'y' and 'x' coordinate arrays to ``.coords``.
+
+        This operation always produces a new copy of the xarray object. See
+        :meth:`xarray.DataArray.assign_coords` and
+        :meth:`xarray.Dataset.assign_coords`.
+
+        See :func:`geoxarray.coords.spatial_coords` for supported metadata
+        structures.
+
+        Coordinate arrays are currently always a single point per data pixel
+        representing the center of the pixel.
+
+        """
+        # don't make an extra copy, assign_coords will do it for us
+        obj = self._get_obj(inplace=True)
+        geo_dim_map = obj.geo._geo_dim_map
+        y_dim_name = geo_dim_map["y"]
+        x_dim_name = geo_dim_map["x"]
+
+        coords_dict = spatial_coords(obj)
+        obj = obj.assign_coords(
+            {
+                y_dim_name: coords_dict["y"],
+                x_dim_name: coords_dict["x"],
+            }
+        )
+        return obj
 
     @property
     def gcps(self) -> dict | None:
