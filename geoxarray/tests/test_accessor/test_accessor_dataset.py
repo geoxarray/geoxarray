@@ -121,9 +121,13 @@ def test_netcdf_grid_mapping_round_trip(tmp_path):
     assert "spatial_ref" in nc_ds.coords
 
 
-def test_using_gcps():
+@pytest.mark.parametrize("inplace", [False, True])
+@pytest.mark.parametrize("has_spatial_ref", [False, True])
+def test_using_gcps(inplace, has_spatial_ref):
     """Test using the GCPs."""
     ds = geotiff_as_read_by_rioxarray()
+    if not has_spatial_ref:
+        ds = ds.drop_vars("spatial_ref")
     assert ds.geo.gcps is None
 
     geojson_gcps = """{'type': 'FeatureCollection', 'features': [
@@ -142,5 +146,10 @@ def test_using_gcps():
         {'type': 'Feature', 'properties': {'id': '7', 'info': '', 'row': 0.0, 'col': 3180.0},
         'geometry': {'type': 'Point', 'coordinates': [30.68727795468313, 62.09145986899579, 126.43214585445821]}}]}"""
 
-    ds.geo.write_gcps(geojson_gcps)
-    assert ds.geo.gcps == geojson_gcps
+    new_ds = ds.geo.write_gcps(geojson_gcps, inplace=inplace)
+    if inplace:
+        assert ds is new_ds
+        assert new_ds.geo.gcps == geojson_gcps
+    else:
+        assert ds is not new_ds
+        assert ds.geo.gcps is None
