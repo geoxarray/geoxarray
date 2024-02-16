@@ -354,12 +354,59 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
 
     @property
     def gcps(self) -> dict | None:
-        """Get the GCPs."""
-        return self._obj.coords["spatial_ref"].attrs.get("gcps")
+        """Get GeoJSON-formatted GCPs, if any, from the grid mapping coordinate variable."""
+        grid_mapping_var_name = self.grid_mapping
+        if grid_mapping_var_name is None:
+            grid_mapping_var_name = DEFAULT_GRID_MAPPING_VARIABLE_NAME
+        return self._obj.coords[grid_mapping_var_name].attrs.get("gcps")
 
-    def write_gcps(self, gcps) -> None:
-        """Write the GCPs to the spatial ref."""
-        self._obj.coords["spatial_ref"].attrs["gcps"] = gcps
+    def write_gcps(self, gcps: str, grid_mapping_name: str | None = None, inplace: bool = False) -> None:
+        """Write GeoJSON-formatted GCPs to the spatial ref.
+
+        GCPs can be retrieved later from the ``obj.geo.gcps`` property.
+        The GeoJSON will also be available from the grid mapping coordinate
+        variable as an attribute named "gcps".
+
+        More information on the GeoJSON format and examples can be found here:
+        https://geojson.org/. GCP GeoJSON is almost always constructed from a
+        series of "Point" features in a ``FeatureCollection``. A basic example::
+
+            {'type': 'FeatureCollection', 'features': [
+                {'type': 'Feature', 'properties': {'id': '1', 'info': '', 'row': 0.0, 'col': 0.0},
+                 'geometry': {'type': 'Point', 'coordinates': [33.03, 61.80, 126.43]}},
+                {'type': 'Feature', 'properties': {'id': '2', 'info': '', 'row': 0.0, 'col': 530.0},
+                 'geometry': {'type': 'Point', 'coordinates': [32.64, 61.85, 126.43]}},
+                {'type': 'Feature', 'properties': {'id': '3', 'info': '', 'row': 0.0, 'col': 1060.0},
+                 'geometry': {'type': 'Point', 'coordinates': [32.25, 61.90, 126.43]}},
+                {'type': 'Feature', 'properties': {'id': '4', 'info': '', 'row': 0.0, 'col': 1590.0},
+                 'geometry': {'type': 'Point', 'coordinates': [31.86, 61.95, 126.43]}},
+                {'type': 'Feature', 'properties': {'id': '5', 'info': '', 'row': 0.0, 'col': 2120.0},
+                 'geometry': {'type': 'Point', 'coordinates': [31.47, 62.00, 126.43]}},
+                {'type': 'Feature', 'properties': {'id': '6', 'info': '', 'row': 0.0, 'col': 2650.0},
+                 'geometry': {'type': 'Point', 'coordinates': [31.08, 62.04, 126.43]}},
+                {'type': 'Feature', 'properties': {'id': '7', 'info': '', 'row': 0.0, 'col': 3180.0},
+                 'geometry': {'type': 'Point', 'coordinates': [30.68, 62.09, 126.43]}}]}
+
+        Parameters
+        ----------
+        gcps:
+            GeoJSON-formatted Ground Control Points (GCPs).
+        grid_mapping_name:
+            Name to use for the coordinate variable created and written by this
+            method. The coordinate variable, also known as the grid mapping
+            variable, will have this name when written to a NetCDF file.
+            Defaults to "spatial_ref".
+        inplace:
+            Whether to modify the current Xarray object inplace or to create
+            a copy first. Default (``False``) is to make a copy.
+
+        """
+        obj = self._get_obj(inplace)
+        grid_mapping_var_name = self.grid_mapping if grid_mapping_name is None else grid_mapping_name
+        if grid_mapping_var_name is None:
+            grid_mapping_var_name = DEFAULT_GRID_MAPPING_VARIABLE_NAME
+        obj.coords[grid_mapping_var_name].attrs["gcps"] = gcps
+        return obj
 
 
 def _get_encoding_or_attr(xr_obj: xr.Dataset | xr.DataArray, attr_name: str) -> Any:

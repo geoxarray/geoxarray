@@ -212,7 +212,8 @@ def test_write_coords_tifffile(data_func, y_dim, x_dim):
     )
 
 
-def test_using_gcps():
+@pytest.mark.parametrize("inplace", [False, True])
+def test_using_gcps(inplace):
     """Test using the GCPs."""
     data_arr = band_as_read_by_rioxarray()
     assert data_arr.geo.gcps is None
@@ -233,5 +234,10 @@ def test_using_gcps():
         {'type': 'Feature', 'properties': {'id': '7', 'info': '', 'row': 0.0, 'col': 3180.0},
         'geometry': {'type': 'Point', 'coordinates': [30.68727795468313, 62.09145986899579, 126.43214585445821]}}]}"""
 
-    data_arr.geo.write_gcps(geojson_gcps)
-    assert data_arr.geo.gcps == geojson_gcps
+    new_data_arr = data_arr.geo.write_gcps(geojson_gcps, inplace=inplace)
+    if inplace:
+        assert data_arr is new_data_arr
+        assert new_data_arr.geo.gcps == geojson_gcps
+    else:
+        assert data_arr is not new_data_arr
+        assert data_arr.geo.gcps is None
