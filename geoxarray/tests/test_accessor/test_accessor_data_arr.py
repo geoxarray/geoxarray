@@ -213,9 +213,12 @@ def test_write_coords_tifffile(data_func, y_dim, x_dim):
 
 
 @pytest.mark.parametrize("inplace", [False, True])
-def test_using_gcps(inplace):
+@pytest.mark.parametrize("has_spatial_ref", [False, True])
+def test_using_gcps(inplace, has_spatial_ref):
     """Test using the GCPs."""
     data_arr = band_as_read_by_rioxarray()
+    if not has_spatial_ref:
+        data_arr = data_arr.drop_vars("spatial_ref")
     assert data_arr.geo.gcps is None
 
     geojson_gcps = """{'type': 'FeatureCollection', 'features': [

@@ -275,10 +275,14 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         gm_attrs["crs_wkt"] = crs_wkt  # CF compatibility
         gm_attrs["spatial_ref"] = crs_wkt  # GDAL support
 
-        obj.coords[grid_mapping_var_name] = xr.Variable((), np.int64(0))
+        self._add_empty_grid_mapping(obj, grid_mapping_var_name)
         obj.coords[grid_mapping_var_name].attrs.update(gm_attrs)
         _assign_grid_mapping(obj, grid_mapping_var_name)
         return obj
+
+    @staticmethod
+    def _add_empty_grid_mapping(obj: XarrayObject, grid_mapping_var_name: str) -> None:
+        obj.coords[grid_mapping_var_name] = xr.Variable((), np.int64(0))
 
     def _optional_crs_from_input(self, new_crs_info: Any | None, obj: XarrayObject) -> CRS:
         if new_crs_info is None:
@@ -358,6 +362,8 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         grid_mapping_var_name = self.grid_mapping
         if grid_mapping_var_name is None:
             grid_mapping_var_name = DEFAULT_GRID_MAPPING_VARIABLE_NAME
+        if grid_mapping_var_name not in self._obj.coords:
+            return None
         return self._obj.coords[grid_mapping_var_name].attrs.get("gcps")
 
     def write_gcps(self, gcps: str, grid_mapping_name: str | None = None, inplace: bool = False) -> None:
@@ -405,6 +411,8 @@ class _SharedGeoAccessor(Generic[XarrayObject]):
         grid_mapping_var_name = self.grid_mapping if grid_mapping_name is None else grid_mapping_name
         if grid_mapping_var_name is None:
             grid_mapping_var_name = DEFAULT_GRID_MAPPING_VARIABLE_NAME
+        if grid_mapping_var_name not in obj.coords:
+            self._add_empty_grid_mapping(obj, grid_mapping_var_name)
         obj.coords[grid_mapping_var_name].attrs["gcps"] = gcps
         return obj
 
