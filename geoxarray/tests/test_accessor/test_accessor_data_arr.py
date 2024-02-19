@@ -209,3 +209,62 @@ def test_write_coords_tifffile(data_func, y_dim, x_dim):
             ]
         ),
     )
+
+
+def test_write_coords_pyr_area():
+    data_arr = pyr_geos_area_2d()
+    y_dim, x_dim = data_arr.dims
+    assert "x" not in data_arr.coords
+    assert "y" not in data_arr.coords
+    assert x_dim not in data_arr.coords
+    assert y_dim not in data_arr.coords
+
+    new_data_arr = data_arr.geo.write_spatial_coords()
+    assert "x" not in new_data_arr.coords
+    assert "y" not in new_data_arr.coords
+    assert x_dim in new_data_arr.coords
+    assert y_dim in new_data_arr.coords
+    np.testing.assert_allclose(
+        new_data_arr.coords[x_dim],
+        np.array(
+            [
+                -5434393.880734,
+                -5433391.87209,
+                -5432389.863446,
+                -5431387.854802,
+                -5430385.846158,
+                -5429383.837514,
+                -5428381.82887,
+                -5427379.820226,
+                -5426377.811582,
+                -5425375.802938,
+                -5424373.794294,
+                -5423371.78565,
+                -5422369.777006,
+                -5421367.768362,
+                -5420365.759718,
+                -5419363.751074,
+                -5418361.74243,
+                -5417359.733786,
+                -5416357.725142,
+                -5415355.716498,
+            ]
+        ),
+    )
+    np.testing.assert_allclose(
+        new_data_arr.coords[y_dim],
+        np.array(
+            [
+                5434393.880734,
+                5433391.87209,
+                5432389.863446,
+                5431387.854802,
+                5430385.846158,
+                5429383.837514,
+                5428381.82887,
+                5427379.820226,
+                5426377.811582,
+                5425375.802938,
+            ]
+        ),
+    )

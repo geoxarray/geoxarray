@@ -166,7 +166,13 @@ def pyr_geos_area_2d() -> xr.DataArray:
         }
     )
     area = AreaDefinition(
-        "", "", "", geos_crs, 200, 100, (-5434894.885056, -5434894.885056, 5434894.885056, 5434894.885056)
+        "",
+        "",
+        "",
+        geos_crs,
+        X_DIM_SIZE,
+        Y_DIM_SIZE,
+        (-5434894.885056, 5424874.798616, -5414854.712176, 5434894.885056),
     )
     data_arr = no_crs_no_dims_2d()
     data_arr.attrs["area"] = area
