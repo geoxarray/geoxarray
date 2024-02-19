@@ -32,6 +32,7 @@ def spatial_coords(data_arr: xr.DataArray) -> dict[str, npt.ArrayLike]:
     Currently supported cases are:
 
     * geotiff read with kerchunk via tifffile
+    * pyresample ``AreaDefinition`` in ``.attrs["area"]``
 
     Parameters
     ----------
