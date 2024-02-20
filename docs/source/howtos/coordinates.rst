@@ -32,11 +32,11 @@ Which will make the DataArray look like:
 
 .. testoutput::
 
-   <xarray.DataArray (y: 20, x: 10)>
+   <xarray.DataArray (y: 20, x: 10)> Size: 2kB
    ...
    Coordinates:
-     * y        (y) float64 5.434e+06 5.433e+06 5.432e+06 ... 5.416e+06 5.415e+06
-     * x        (x) float64 -5.434e+06 -5.433e+06 ... -5.426e+06 -5.425e+06
+     * y        (y) float64 160B 5.434e+06 5.433e+06 ... 5.416e+06 5.415e+06
+     * x        (x) float64 80B -5.434e+06 -5.433e+06 ... -5.426e+06 -5.425e+06
    Attributes:
        ModelPixelScale:  [1002.008644, 1002.008644, 0.0]
        ModelTiepoint:    [0.0, 0.0, 0.0, -5434894.885056, 5434894.885056, 0.0]

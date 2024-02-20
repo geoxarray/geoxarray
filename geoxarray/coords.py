@@ -32,6 +32,7 @@ def spatial_coords(data_arr: xr.DataArray) -> dict[str, npt.ArrayLike]:
     Currently supported cases are:
 
     * geotiff read with kerchunk via tifffile
+    * pyresample ``AreaDefinition`` in ``.attrs["area"]``
 
     Parameters
     ----------
@@ -63,6 +64,9 @@ def spatial_coords(data_arr: xr.DataArray) -> dict[str, npt.ArrayLike]:
         x_coord = (x_left + x_pixel_res / 2.0) + np.arange(width) * x_pixel_res
         y_coord = (y_top - y_pixel_res / 2.0) - np.arange(height) * y_pixel_res
         # XXX: What to do with  'GTRasterTypeGeoKey': <RasterPixel.IsArea: 1>?
+    elif "area" in data_arr.attrs:
+        area_def = data_arr.attrs["area"]
+        x_coord, y_coord = area_def.get_proj_vectors()
     else:
         raise ValueError("Unknown data structure. Can't compute spatial coordinates.")
     return {"y": y_coord, "x": x_coord}

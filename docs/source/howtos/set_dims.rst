@@ -25,11 +25,11 @@ We can see from this output that there are three dimensions in this DataArray:
 
 .. testoutput::
 
-    <xarray.DataArray (dim_0: 5, dim_1: 20, dim_2: 10)>
+    <xarray.DataArray (dim_0: 5, dim_1: 20, dim_2: 10)> Size: 8kB
     ...
     Coordinates:
-      * dim_1    (dim_1) float64 0.0 1.0 2.0 3.0 4.0 ... 15.0 16.0 17.0 18.0 19.0
-      * dim_2    (dim_2) float64 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
+      * dim_1    (dim_1) float64 160B 0.0 1.0 2.0 3.0 4.0 ... 16.0 17.0 18.0 19.0
+      * dim_2    (dim_2) float64 80B 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
     Dimensions without coordinates: dim_0
 
 These don't fit geoxarray's usual preferred names for
@@ -76,9 +76,9 @@ doing:
 
 .. testoutput::
 
-    <xarray.DataArray (dim_0: 5, y: 20, x: 10)>
+    <xarray.DataArray (dim_0: 5, y: 20, x: 10)> Size: 8kB
     ...
     Coordinates:
-      * y        (y) float64 0.0 1.0 2.0 3.0 4.0 ... 15.0 16.0 17.0 18.0 19.0
-      * x        (x) float64 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
+      * y        (y) float64 160B 0.0 1.0 2.0 3.0 4.0 ... 16.0 17.0 18.0 19.0
+      * x        (x) float64 80B 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
     Dimensions without coordinates: dim_0

@@ -78,14 +78,14 @@ Let's say the file we loaded above looks something like this:
 
 .. testoutput::
 
-   <xarray.Dataset>
+   <xarray.Dataset> Size: 2kB
    Dimensions:                 (y: 20, x: 10)
    Coordinates:
-     * y                       (y) float64 0.0 1.0 2.0 3.0 ... 16.0 17.0 18.0 19.0
-     * x                       (x) float64 0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
-       goes_imager_projection  float64 0.0
+     * y                       (y) float64 160B 0.0 1.0 2.0 3.0 ... 17.0 18.0 19.0
+     * x                       (x) float64 80B 0.0 1.0 2.0 3.0 ... 6.0 7.0 8.0 9.0
+       goes_imager_projection  float64 8B 0.0
    Data variables:
-       Rad                     (y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0
+       Rad                     (y, x) float64 2kB 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0
 
 This Dataset has ``x`` and ``y`` dimensions and coordinate variables and a
 single ``Rad`` data variable. There is one grid mapping variable with the
@@ -165,7 +165,7 @@ a DataArray in ``.attrs["area"]``.
 .. testoutput::
    :options: +SKIP
 
-   <xarray.DataArray (y: 20, x: 10)>
+   <xarray.DataArray (y: 20, x: 10)> Size: 2kB
    ...
    Dimensions without coordinates: y, x
    Attributes:

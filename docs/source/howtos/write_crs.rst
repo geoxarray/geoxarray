@@ -21,7 +21,7 @@ that geoxarray is unfamiliar with) that looks like this:
 
 .. testoutput::
 
-   <xarray.DataArray (y: 20, x: 10)>
+   <xarray.DataArray (y: 20, x: 10)> Size: 2kB
    ...
    Dimensions without coordinates: y, x
 
@@ -35,10 +35,10 @@ We can explicitly add the CRS information use the
 
 .. testoutput::
 
-   <xarray.DataArray (y: 20, x: 10)>
+   <xarray.DataArray (y: 20, x: 10)> Size: 2kB
    ...
    Coordinates:
-       spatial_ref  int64 0
+       spatial_ref  int64 8B 0
    Dimensions without coordinates: y, x
 
 The new ``DataArray`` now has a ``spatial_ref`` coordinate variable that
@@ -55,10 +55,10 @@ object and called :meth:`xarray.Dataset.to_netcdf`.
 .. testoutput::
 
    spatial_ref
-   <xarray.DataArray 'spatial_ref' ()>
+   <xarray.DataArray 'spatial_ref' ()> Size: 8B
    ...
    Coordinates:
-       spatial_ref  int64 0
+       spatial_ref  int64 8B 0
    Attributes:
        crs_wkt:                      GEOGCRS["WGS 84",ENSEMBLE["World Geodetic S...
        semi_major_axis:              6378137.0
