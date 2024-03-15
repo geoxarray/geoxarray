@@ -14,3 +14,4 @@ How-Tos
    access_crs
    write_crs
    coordinates
+   write_gcps

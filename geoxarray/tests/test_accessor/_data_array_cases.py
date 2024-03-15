@@ -193,3 +193,36 @@ def tifffile_nonyx_with_geometa() -> xr.DataArray:
     data_arr.attrs["ModelPixelScale"] = [1002.008644, 1002.008644, 0.0]
     data_arr.attrs["ModelTiepoint"] = [0.0, 0.0, 0.0, -5434894.885056, 5434894.885056, 0.0]
     return data_arr
+
+
+def cf_grid_mapping_with_wkt():
+    """Create a grid mapping with a wkt."""
+    return xr.DataArray(
+        0,
+        attrs={
+            "crs_wkt": (
+                'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,'
+                'AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,'
+                'AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],'
+                'AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]'
+            ),
+            "long_name": "Sentinel 1",
+            "grid_mapping_name": "latitude_longitude",
+            "horizontal_datum_name": "World Geodetic System 1984",
+            "longitude_of_prime_meridian": 0.0,
+            "inverse_flattening": 298.257223563,
+            "prime_meridian_name": "Greenwich",
+            "reference_ellipsoid_name": "WGS 84",
+            "semi_major_axis": 6378137.0,
+            "semi_minor_axis": 6356752.314245179,
+        },
+    )
+
+
+def band_as_read_by_rioxarray() -> xr.Dataset:
+    """Create a data array liking a band as read by rioxarray."""
+    spatial_ref = cf_grid_mapping_with_wkt()
+    data_array = xr.DataArray(
+        da.zeros((1, Y_DIM_SIZE, X_DIM_SIZE)), dims=("band", "y", "x"), coords=dict(band=[1], spatial_ref=spatial_ref)
+    )
+    return data_array
