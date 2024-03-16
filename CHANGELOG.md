@@ -1,3 +1,16 @@
+## Version 0.2.0 (2024/03/15)
+
+### Pull Requests Merged
+
+#### Features added
+
+* [PR 65](https://github.com/geoxarray/geoxarray/pull/65) - Add coordinate creation for pyresample area definitions
+* [PR 63](https://github.com/geoxarray/geoxarray/pull/63) - Add spatial coordinate writing
+* [PR 61](https://github.com/geoxarray/geoxarray/pull/61) - Add some support for gcps
+
+In this release 3 pull requests were closed.
+
+
 ## Version 0.1.0.post1 (2023/09/20)
 
 ### Issues Closed
