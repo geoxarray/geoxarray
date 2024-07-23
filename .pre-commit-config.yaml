@@ -24,7 +24,7 @@ repos:
         language_version: python3
         additional_dependencies: [flake8-docstrings, flake8-debugger, flake8-bugbear, mccabe]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.1
+    rev: v1.11.0
     hooks:
       - id: mypy
         # Override default --ignore-missing-imports
