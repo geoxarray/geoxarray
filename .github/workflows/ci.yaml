@@ -20,10 +20,8 @@ jobs:
       - name: Setup Conda Environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
-          use-mamba: true
-          python-version: "3.11"
+          python-version: "3.12"
           environment-file: continuous_integration/environment.yaml
           activate-environment: test-environment
 
@@ -79,10 +77,10 @@ jobs:
       fail-fast: true
       matrix:
         os: ["windows-latest", "ubuntu-latest", "macos-latest"]
-        python-version: ["3.9", "3.11"]
+        python-version: ["3.9", "3.12"]
         experimental: [false]
         include:
-          - python-version: "3.11"
+          - python-version: "3.12"
             os: "ubuntu-latest"
             experimental: true
 
@@ -99,9 +97,7 @@ jobs:
       - name: Setup Conda Environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
-          use-mamba: true
           python-version: ${{ matrix.python-version }}
           environment-file: continuous_integration/environment.yaml
           activate-environment: test-environment
