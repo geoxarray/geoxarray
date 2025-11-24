@@ -30,7 +30,7 @@ relative_files = true
 omit = ["geoxarray/version.py"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.11"
 # See https://github.com/python/mypy/issues/12286 for automatic multi-platform support
 platform = "linux"
 # platform = win32
