@@ -40,7 +40,7 @@ setup(
     url="https://github.com/geoxarray/geoxarray",
     packages=find_packages(),
     include_package_data=True,
-    python_requires=">=3.9",
+    python_requires=">=3.11",
     install_requires=requirements,
     extras_require=extras_require,
     tests_require=["pytest", "dask", "pyresample"],
