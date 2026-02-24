@@ -22,10 +22,10 @@ import os
 import sys
 from unittest import mock
 
-from pkg_resources import get_distribution
-
 sys.path.append(os.path.abspath("../../"))
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+import geoxarray
 
 # -- General configuration ------------------------------------------------
 
@@ -100,8 +100,7 @@ author = "geoxarray"
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
-# get version using setuptools-scm
-release = get_distribution("geoxarray").version
+release = geoxarray.__version__
 # for example take major/minor
 version = ".".join(release.split(".")[:2])
 
