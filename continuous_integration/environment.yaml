@@ -5,7 +5,7 @@ dependencies:
   - xarray
   - dask
   - distributed
-  - Cython
+  - cython
   - sphinx
   - cartopy
   - pillow
